@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Bell, HelpCircle, ChevronDown, Check } from 'lucide-react';
+import { Search, Bell, HelpCircle, ChevronDown, Check, Menu } from 'lucide-react';
 
-export default function Topbar() {
+interface TopbarProps {
+  onMenuToggle?: () => void;
+}
+
+export default function Topbar({ onMenuToggle }: TopbarProps) {
   const [activeRole, setActiveRole] = useState<'Administrator' | 'Sales Executive' | 'Warehouse Manager' | 'Finance Accountant'>('Administrator');
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
 
@@ -15,15 +19,26 @@ export default function Topbar() {
   ] as const;
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-40 shrink-0">
-      {/* Search Bar */}
-      <div className="relative w-96">
-        <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-        <input
-          type="text"
-          placeholder="Quick search SKU, customer, quotation..."
-          className="w-full pl-10 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700"
-        />
+    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-8 sticky top-0 z-40 shrink-0">
+      {/* Left side with menu toggle and search */}
+      <div className="flex items-center gap-4 flex-1">
+        <button 
+          onClick={onMenuToggle}
+          className="lg:hidden p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg cursor-pointer shrink-0"
+          aria-label="Toggle Menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        {/* Search Bar */}
+        <div className="relative w-full max-w-xs md:max-w-md hidden sm:block">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Quick search SKU, customer, quotation..."
+            className="w-full pl-10 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700"
+          />
+        </div>
       </div>
 
       {/* Right Actions */}

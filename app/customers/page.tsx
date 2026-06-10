@@ -58,7 +58,8 @@ export default function CustomersPage() {
 
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         {/* Left Column: Customer Grid */}
-        <div className="flex-1 w-full space-y-4">
+        <div className="flex-1 min-w-0 w-full space-y-4">
+
           {/* Search bar */}
           <div className="relative max-w-md">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -74,7 +75,8 @@ export default function CustomersPage() {
           {/* Table Card */}
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full min-w-[700px] text-left border-collapse">
+
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                     <th className="px-6 py-3.5">Company Name</th>

@@ -63,7 +63,8 @@ export default function ProductMasterPage() {
 
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         {/* Left Section: Product Table */}
-        <div className="flex-1 w-full space-y-4">
+        <div className="flex-1 min-w-0 w-full space-y-4">
+
           {/* Controls Bar */}
           <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
             {/* Search */}
@@ -99,7 +100,8 @@ export default function ProductMasterPage() {
           {/* Table Card */}
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full min-w-[800px] text-left border-collapse">
+
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                     <th className="px-6 py-3.5">SKU</th>

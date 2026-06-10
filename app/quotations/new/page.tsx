@@ -208,7 +208,7 @@ export default function CreateQuotationPage() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
+                <table className="w-full min-w-[650px] text-left border-collapse text-xs">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50 text-slate-500 font-bold uppercase">
                       <th className="px-4 py-3">Cable SKU Selector</th>

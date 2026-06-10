@@ -183,7 +183,7 @@ export default function InvoicesPage() {
         {/* Invoice Table */}
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[950px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                   <th className="px-6 py-3.5">Invoice No</th>

@@ -12,7 +12,8 @@ import {
   BarChart3, 
   Settings,
   ShieldCheck,
-  Cable
+  Cable,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -33,22 +34,33 @@ const sidebarItems: SidebarItem[] = [
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
-export default function AppSidebar() {
+export default function AppSidebar({ className, onClose }: { className?: string; onClose?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-100 flex flex-col border-r border-slate-800 shrink-0 h-screen sticky top-0">
+    <aside className={cn("w-64 bg-slate-900 text-slate-100 flex flex-col border-r border-slate-800 shrink-0 h-screen sticky top-0", className)}>
       {/* Brand Header */}
-      <div className="h-16 flex items-center px-6 border-b border-slate-800 gap-2 shrink-0">
-        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-          <Cable className="w-5 h-5" />
+      <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800 shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 font-sans">
+            <Cable className="w-5 h-5" />
+          </div>
+          <div className="font-sans">
+            <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent block leading-tight">
+              FactoryOS
+            </span>
+            <span className="text-xs block text-slate-500 font-medium">Cable Hub Edition</span>
+          </div>
         </div>
-        <div>
-          <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-            FactoryOS
-          </span>
-          <span className="text-xs block text-slate-500 font-medium">Cable Hub Edition</span>
-        </div>
+        {onClose && (
+          <button 
+            onClick={onClose}
+            className="lg:hidden p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800 cursor-pointer"
+            aria-label="Close Menu"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Navigation Links */}

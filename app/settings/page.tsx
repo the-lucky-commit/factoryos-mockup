@@ -16,10 +16,18 @@ import {
   Square
 } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
+import { useSecurity, permissionDefinitions } from '@/lib/security-context';
+import AccessDenied from '@/components/layout/access-denied';
 
 export default function SettingsPage() {
   const { language, setLanguage, t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'profile' | 'docs' | 'permissions'>('profile');
+  const { activeRole, permissions, togglePermission, auditLogs, logAction } = useSecurity();
+
+  if (activeRole !== 'Administrator') {
+    return <AccessDenied moduleNameTh="ตั้งค่าระบบ (Platform Settings)" moduleNameEn="Platform Settings" />;
+  }
+
+  const [activeTab, setActiveTab] = useState<'profile' | 'docs' | 'permissions' | 'audit'>('profile');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Profile Form State Mock
@@ -38,6 +46,7 @@ export default function SettingsPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     setSaveSuccess(true);
+    logAction(`Updated Platform settings: Profile & Templates data`, 'Success');
     setTimeout(() => {
       setSaveSuccess(false);
     }, 3000);
@@ -92,6 +101,16 @@ export default function SettingsPage() {
           }`}
         >
           <ShieldCheck className="w-3.5 h-3.5" /> {language === 'th' ? 'สิทธิ์การใช้งาน' : 'Access Permissions'}
+        </button>
+        <button
+          onClick={() => setActiveTab('audit')}
+          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            activeTab === 'audit'
+              ? "bg-white text-blue-600 shadow-sm"
+              : "text-slate-500 hover:text-slate-800"
+          }`}
+        >
+          <Settings2 className="w-3.5 h-3.5" /> {language === 'th' ? 'บันทึกประวัติระบบ' : 'System Logs'}
         </button>
       </div>
 
@@ -266,70 +285,144 @@ export default function SettingsPage() {
       {activeTab === 'permissions' && (
         <Card>
           <CardHeader>
-            <CardTitle>Role Permission Matrix</CardTitle>
-            <CardDescription>Review system security access configurations. Tick marks indicate permissions granted.</CardDescription>
+            <CardTitle>{language === 'th' ? 'ตารางสิทธิ์การใช้งานแยกตามบทบาท' : 'Role Permission Matrix'}</CardTitle>
+            <CardDescription>
+              {language === 'th' 
+                ? 'กำหนดสิทธิ์การใช้งานแต่ละบทบาทจำลอง ติ๊กเลือกเพื่อเปิดสิทธิ์ความปลอดภัย (Super Admin สามารถควบคุมได้ทั้งหมด)' 
+                : 'Configure module access controls. Tick boxes to grant features dynamically.'
+              }
+            </CardDescription>
           </CardHeader>
           <CardContent className="p-0 border-t border-slate-100">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold uppercase">
-                    <th className="px-6 py-3.5">Module / Function</th>
-                    <th className="px-6 py-3.5 text-center">Admin</th>
-                    <th className="px-6 py-3.5 text-center">Sales Executive</th>
-                    <th className="px-6 py-3.5 text-center">Warehouse Staff</th>
-                    <th className="px-6 py-3.5 text-center">Finance Accountant</th>
+                    <th className="px-6 py-4">{language === 'th' ? 'โมดูล / ฟังก์ชันการทำรายการ' : 'Module / Function'}</th>
+                    <th className="px-6 py-4 text-center">{language === 'th' ? 'ผู้ดูแลระบบ (Admin)' : 'Admin'}</th>
+                    <th className="px-6 py-4 text-center">{language === 'th' ? 'ฝ่ายขาย (Sales)' : 'Sales Executive'}</th>
+                    <th className="px-6 py-4 text-center">{language === 'th' ? 'ฝ่ายคลังสินค้า (Warehouse)' : 'Warehouse Manager'}</th>
+                    <th className="px-6 py-4 text-center">{language === 'th' ? 'ฝ่ายบัญชี (Finance)' : 'Finance Accountant'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700 font-semibold">
-                  {/* Row 1 */}
-                  <tr>
-                    <td className="px-6 py-3.5">Manage Product Catalog (SKUs)</td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
+                  {permissionDefinitions.map((permission) => (
+                    <tr key={permission.key} className="hover:bg-slate-50/50">
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-slate-900">{language === 'th' ? permission.nameTh : permission.nameEn}</div>
+                        <div className="text-[10px] text-slate-400 font-medium mt-0.5">{language === 'th' ? permission.descriptionTh : permission.descriptionEn}</div>
+                      </td>
+                      {/* Admin - Always checked, disabled */}
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={permissions['Administrator'][permission.key]}
+                          disabled
+                          className="w-4 h-4 text-blue-600 border-slate-350 rounded focus:ring-blue-500 cursor-not-allowed opacity-75 mx-auto"
+                        />
+                      </td>
+                      {/* Sales Executive */}
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={permissions['Sales Executive'][permission.key]}
+                          onChange={() => togglePermission('Sales Executive', permission.key)}
+                          className="w-4 h-4 text-blue-600 border-slate-350 rounded focus:ring-blue-500 cursor-pointer mx-auto"
+                        />
+                      </td>
+                      {/* Warehouse Manager */}
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={permissions['Warehouse Manager'][permission.key]}
+                          onChange={() => togglePermission('Warehouse Manager', permission.key)}
+                          className="w-4 h-4 text-blue-600 border-slate-350 rounded focus:ring-blue-500 cursor-pointer mx-auto"
+                        />
+                      </td>
+                      {/* Finance Accountant */}
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={permissions['Finance Accountant'][permission.key]}
+                          onChange={() => togglePermission('Finance Accountant', permission.key)}
+                          className="w-4 h-4 text-blue-600 border-slate-350 rounded focus:ring-blue-500 cursor-pointer mx-auto"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {activeTab === 'audit' && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>{language === 'th' ? 'บันทึกประวัติการทำงานของระบบ (System Audit Log)' : 'System Audit Log'}</CardTitle>
+              <CardDescription>
+                {language === 'th'
+                  ? 'ตรวจสอบประวัติกิจกรรมการใช้งาน การเข้าถึง และการเปลี่ยนแปลงสิทธิ์ความปลอดภัยในระบบ (Full Security Analysis)'
+                  : 'Track and audit user actions, permission toggles, data modifications, and mock security logs.'
+                }
+              </CardDescription>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (confirm(language === 'th' ? 'ต้องการล้างบันทึกประวัติใช่หรือไม่?' : 'Clear audit logs?')) {
+                    localStorage.removeItem('security_audit_logs');
+                    window.location.reload();
+                  }
+                }}
+                className="text-xs text-rose-500 border-rose-200 hover:bg-rose-50 cursor-pointer font-bold"
+              >
+                {language === 'th' ? 'ล้างบันทึก' : 'Clear Logs'}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0 border-t border-slate-100">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold uppercase">
+                    <th className="px-6 py-3.5">{language === 'th' ? 'วันเวลา' : 'Timestamp'}</th>
+                    <th className="px-6 py-3.5">{language === 'th' ? 'ผู้ใช้งาน' : 'User'}</th>
+                    <th className="px-6 py-3.5">{language === 'th' ? 'บทบาท' : 'Role'}</th>
+                    <th className="px-6 py-3.5">{language === 'th' ? 'การกระทำ' : 'Action Logs'}</th>
+                    <th className="px-6 py-3.5 text-center">{language === 'th' ? 'สถานะ' : 'Status'}</th>
+                    <th className="px-6 py-3.5">{language === 'th' ? 'เลขไอพี' : 'IP Address'}</th>
                   </tr>
-                  {/* Row 2 */}
-                  <tr>
-                    <td className="px-6 py-3.5">Process Stock Movement (Receive/Issue)</td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                  </tr>
-                  {/* Row 3 */}
-                  <tr>
-                    <td className="px-6 py-3.5">Draft & Issue Quotations</td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                  </tr>
-                  {/* Row 4 */}
-                  <tr>
-                    <td className="px-6 py-3.5">Approve Special Project Price Deals</td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                  </tr>
-                  {/* Row 5 */}
-                  <tr>
-                    <td className="px-6 py-3.5">Invoice Ledger Settlements (Receive Cash)</td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                  </tr>
-                  {/* Row 6 */}
-                  <tr>
-                    <td className="px-6 py-3.5">Modify System & Document Prefixes</td>
-                    <td className="px-6 py-3.5 text-center"><CheckSquare className="w-4 h-4 text-blue-600 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="px-6 py-3.5 text-center"><Square className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700 font-semibold">
+                  {auditLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-3.5 whitespace-nowrap text-slate-500 font-mono">{log.timestamp}</td>
+                      <td className="px-6 py-3.5 whitespace-nowrap font-bold text-slate-900">{log.user}</td>
+                      <td className="px-6 py-3.5 whitespace-nowrap">
+                        <span className="px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] text-slate-600 font-bold">
+                          {log.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3.5 text-slate-750 max-w-xs sm:max-w-md truncate md:whitespace-normal break-words" title={log.action}>
+                        {log.action}
+                      </td>
+                      <td className="px-6 py-3.5 text-center whitespace-nowrap">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          log.status === 'Success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-250' :
+                          log.status === 'Warning' ? 'bg-amber-50 text-amber-700 border border-amber-250' :
+                          'bg-rose-50 text-rose-700 border border-rose-250'
+                        }`}>
+                          {log.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3.5 whitespace-nowrap text-slate-400 font-mono">{log.ipAddress}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

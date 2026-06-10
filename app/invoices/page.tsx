@@ -20,7 +20,15 @@ import {
   DollarSign
 } from 'lucide-react';
 
+import { useSecurity } from '@/lib/security-context';
+import AccessDenied from '@/components/layout/access-denied';
+
 export default function InvoicesPage() {
+  const { checkPermission, logAction } = useSecurity();
+
+  if (!checkPermission('manage_invoices')) {
+    return <AccessDenied moduleNameTh="ใบแจ้งหนี้ (Invoices)" moduleNameEn="Invoices" />;
+  }
   // Local state to simulate receiving payments
   const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,6 +75,7 @@ export default function InvoicesPage() {
 
   // Simulate payment processing
   const handleReceivePayment = (id: string) => {
+    const targetInv = invoices.find(inv => inv.id === id);
     const updated = invoices.map((inv) => {
       if (inv.id === id) {
         setPaymentSuccessInfo({
@@ -83,6 +92,9 @@ export default function InvoicesPage() {
       return inv;
     });
     setInvoices(updated);
+    if (targetInv) {
+      logAction(`Invoice: Settled payment on invoice ${targetInv.invoiceNumber} (Marked Paid, settled ${targetInv.outstandingAmount} THB)`, 'Success');
+    }
   };
 
   return (

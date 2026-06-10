@@ -23,8 +23,16 @@ import {
   Boxes,
   Plus
 } from 'lucide-react';
+import { useSecurity } from '@/lib/security-context';
+import AccessDenied from '@/components/layout/access-denied';
 
 export default function ProductMasterPage() {
+  const { checkPermission } = useSecurity();
+
+  if (!checkPermission('manage_products')) {
+    return <AccessDenied moduleNameTh="ข้อมูลสินค้า (Product Master)" moduleNameEn="Product Master" />;
+  }
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(mockProducts[0]);

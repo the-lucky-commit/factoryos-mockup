@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/language-context';
+import { useSecurity } from '@/lib/security-context';
 
 interface SidebarItem {
   name: string;
@@ -51,6 +52,20 @@ export default function AppSidebar({
 }) {
   const pathname = usePathname();
   const { t } = useLanguage();
+  const { activeRole, checkPermission } = useSecurity();
+
+  // Filter sidebar items based on role permission configuration
+  const visibleItems = sidebarItems.filter(item => {
+    if (item.href === '/dashboard') return true;
+    if (item.href === '/products') return checkPermission('manage_products');
+    if (item.href === '/inventory') return checkPermission('process_inventory');
+    if (item.href === '/quotations') return checkPermission('create_quotations');
+    if (item.href === '/invoices') return checkPermission('manage_invoices');
+    if (item.href === '/settings') return activeRole === 'Administrator';
+    // Customers & Reports: hide for Warehouse Manager, show for others
+    if (item.href === '/customers' || item.href === '/reports') return activeRole !== 'Warehouse Manager';
+    return true;
+  });
 
   return (
     <aside className={cn(
@@ -105,7 +120,7 @@ export default function AppSidebar({
         ) : (
           <div className="h-px bg-slate-800/80 my-4 mx-2" />
         )}
-        {sidebarItems.map((item) => {
+        {visibleItems.map((item) => {
           // Check if pathname starts with the item.href (for pages with sub-routes like /quotations/new)
           // Exception: /dashboard should be exact match
           const isActive = item.href === '/dashboard' 

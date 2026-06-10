@@ -23,8 +23,15 @@ import {
   Calculator
 } from 'lucide-react';
 import Link from 'next/link';
+import { useSecurity } from '@/lib/security-context';
+import AccessDenied from '@/components/layout/access-denied';
 
 export default function QuotationsPage() {
+  const { checkPermission } = useSecurity();
+
+  if (!checkPermission('create_quotations')) {
+    return <AccessDenied moduleNameTh="ใบเสนอราคา (Quotations)" moduleNameEn="Quotations" />;
+  }
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [previewQuotation, setPreviewQuotation] = useState<Quotation | null>(null);

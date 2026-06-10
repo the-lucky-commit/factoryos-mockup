@@ -23,8 +23,15 @@ import {
   Printer
 } from 'lucide-react';
 import Link from 'next/link';
+import { useSecurity } from '@/lib/security-context';
+import AccessDenied from '@/components/layout/access-denied';
 
 export default function CreateQuotationPage() {
+  const { checkPermission, logAction } = useSecurity();
+
+  if (!checkPermission('create_quotations')) {
+    return <AccessDenied moduleNameTh="สร้างใบเสนอราคา (Create Quotation)" moduleNameEn="Create Quotation" />;
+  }
   // 1. Core State
   const [selectedCustomerId, setSelectedCustomerId] = useState(mockCustomers[0].id);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -116,6 +123,7 @@ export default function CreateQuotationPage() {
     const newNo = `QT202606-${Math.floor(100 + Math.random() * 900)}`;
     setNewQuoteNo(newNo);
     setSavedSuccess(true);
+    logAction(`Created Quotation ${newNo} (${status === 'Draft' ? 'แบบร่าง' : 'ส่งแล้ว'}) for customer ID: ${selectedCustomerId}`, 'Success');
   };
 
   return (

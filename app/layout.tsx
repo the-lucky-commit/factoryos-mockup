@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AppLayoutShell from "@/components/layout/app-layout-shell";
 import { LanguageProvider } from "@/lib/language-context";
+import { SecurityProvider } from "@/lib/security-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,9 @@ export default function RootLayout({
     >
       <body className="h-full bg-slate-50 font-sans">
         <LanguageProvider>
-          <AppLayoutShell>{children}</AppLayoutShell>
+          <SecurityProvider>
+            <AppLayoutShell>{children}</AppLayoutShell>
+          </SecurityProvider>
         </LanguageProvider>
       </body>
     </html>

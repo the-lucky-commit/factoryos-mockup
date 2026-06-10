@@ -23,7 +23,15 @@ import {
   Sparkles
 } from 'lucide-react';
 
+import { useSecurity } from '@/lib/security-context';
+import AccessDenied from '@/components/layout/access-denied';
+
 export default function InventoryPage() {
+  const { checkPermission, logAction } = useSecurity();
+
+  if (!checkPermission('process_inventory')) {
+    return <AccessDenied moduleNameTh="คลังสินค้า (Inventory)" moduleNameEn="Inventory" />;
+  }
   // Local state to simulate live inventory operations
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [movements, setMovements] = useState<InventoryMovement[]>(mockInventoryMovements);
@@ -106,6 +114,7 @@ export default function InventoryPage() {
 
     setProducts(updatedProducts);
     setMovements([newMovement, ...movements]);
+    logAction(`Inventory: ${movementType} (${Math.abs(qtyChange)} units) for SKU ${selectedSku} - ${targetProduct.name}`, 'Success');
     
     // Close Modal and Reset Form
     setActiveAction(null);

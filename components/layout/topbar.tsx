@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Search, Bell, HelpCircle, ChevronDown, Check, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/language-context';
+import { useSecurity, UserRole } from '@/lib/security-context';
 
 interface TopbarProps {
   onMenuToggle?: () => void;
@@ -11,15 +12,15 @@ interface TopbarProps {
 
 export default function Topbar({ onMenuToggle }: TopbarProps) {
   const { language, setLanguage, t } = useLanguage();
-  const [activeRole, setActiveRole] = useState<'Administrator' | 'Sales Executive' | 'Warehouse Manager' | 'Finance Accountant'>('Administrator');
+  const { activeRole, setActiveRole } = useSecurity();
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
 
-  const roles = [
+  const roles: UserRole[] = [
     'Administrator',
     'Sales Executive',
     'Warehouse Manager',
     'Finance Accountant'
-  ] as const;
+  ];
 
   const roleTranslationKeys: Record<string, string> = {
     'Administrator': 'common.administrator',

@@ -11,6 +11,7 @@ export default function AppLayoutShell({ children }: { children: React.ReactNode
   const [authorized, setAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     // Close mobile sidebar on route change
@@ -31,6 +32,22 @@ export default function AppLayoutShell({ children }: { children: React.ReactNode
     }
     setLoading(false);
   }, [pathname, router]);
+
+  useEffect(() => {
+    // Load sidebar collapsed state from localStorage client-side
+    const saved = localStorage.getItem('sidebar_collapsed');
+    if (saved === 'true') {
+      setSidebarCollapsed(true);
+    }
+  }, []);
+
+  const handleToggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const nextVal = !prev;
+      localStorage.setItem('sidebar_collapsed', String(nextVal));
+      return nextVal;
+    });
+  };
 
   if (loading) {
     return (
@@ -54,7 +71,11 @@ export default function AppLayoutShell({ children }: { children: React.ReactNode
   return (
     <div className="h-full flex overflow-hidden text-slate-900 bg-slate-50 font-sans">
       {/* Desktop Sidebar */}
-      <AppSidebar className="hidden lg:flex" />
+      <AppSidebar 
+        className="hidden lg:flex" 
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={handleToggleSidebar}
+      />
 
       {/* Mobile Sidebar Drawer */}
       {mobileSidebarOpen && (

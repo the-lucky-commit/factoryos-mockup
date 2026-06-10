@@ -91,7 +91,7 @@ export default function DashboardPage() {
       />
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {/* Card 1: Revenue YTD */}
         <Card className="hover:border-blue-200 transition-colors">
           <CardContent className="p-5">
@@ -101,10 +101,12 @@ export default function DashboardPage() {
                 <DollarSign className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-slate-900">{formatCurrency(totalRevenueYTD)}</h3>
-              <p className="text-xs text-emerald-600 font-semibold flex items-center gap-1 mt-1">
-                <TrendingUp className="w-3.5 h-3.5" /> +25.5% vs Last Year
+            <div className="mt-4 min-w-0">
+              <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate" title={formatCurrency(totalRevenueYTD)}>
+                {formatCurrency(totalRevenueYTD, false)}
+              </h3>
+              <p className="text-xs text-emerald-600 font-semibold flex items-center gap-1 mt-1 truncate">
+                <TrendingUp className="w-3.5 h-3.5 shrink-0" /> +25.5% vs Last Year
               </p>
             </div>
           </CardContent>
@@ -119,9 +121,9 @@ export default function DashboardPage() {
                 <FileText className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-slate-900">{activeQuotesCount}</h3>
-              <p className="text-xs text-slate-400 font-medium mt-1">
+            <div className="mt-4 min-w-0">
+              <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate">{activeQuotesCount}</h3>
+              <p className="text-xs text-slate-400 font-medium mt-1 truncate">
                 Draft, Sent & Accepted
               </p>
             </div>
@@ -137,9 +139,9 @@ export default function DashboardPage() {
                 <Receipt className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-slate-900">{pendingInvoicesCount}</h3>
-              <p className="text-xs text-slate-400 font-medium mt-1">
+            <div className="mt-4 min-w-0">
+              <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate">{pendingInvoicesCount}</h3>
+              <p className="text-xs text-slate-400 font-medium mt-1 truncate">
                 Unpaid / Partially Paid
               </p>
             </div>
@@ -155,9 +157,11 @@ export default function DashboardPage() {
                 <Boxes className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-slate-900">{formatCurrency(inventoryValue)}</h3>
-              <p className="text-xs text-slate-400 font-medium mt-1">
+            <div className="mt-4 min-w-0">
+              <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate" title={formatCurrency(inventoryValue)}>
+                {formatCurrency(inventoryValue, false)}
+              </h3>
+              <p className="text-xs text-slate-400 font-medium mt-1 truncate">
                 Asset value at cost price
               </p>
             </div>
@@ -173,9 +177,9 @@ export default function DashboardPage() {
                 <AlertTriangle className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-slate-900">{lowStockCount}</h3>
-              <p className="text-xs text-rose-600 font-semibold mt-1">
+            <div className="mt-4 min-w-0">
+              <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate">{lowStockCount}</h3>
+              <p className="text-xs text-rose-600 font-semibold mt-1 truncate">
                 Needs procurement
               </p>
             </div>
@@ -191,9 +195,9 @@ export default function DashboardPage() {
                 <Calendar className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-slate-900">{juneOrdersCount}</h3>
-              <p className="text-xs text-slate-400 font-medium mt-1">
+            <div className="mt-4 min-w-0">
+              <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate">{juneOrdersCount}</h3>
+              <p className="text-xs text-slate-400 font-medium mt-1 truncate">
                 Completed orders in June
               </p>
             </div>

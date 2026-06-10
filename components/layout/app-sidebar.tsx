@@ -18,22 +18,24 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/language-context';
 
 interface SidebarItem {
   name: string;
+  key: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
 }
 
 const sidebarItems: SidebarItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Product Master', href: '/products', icon: Package },
-  { name: 'Inventory', href: '/inventory', icon: Boxes },
-  { name: 'Quotations', href: '/quotations', icon: FileText },
-  { name: 'Invoices', href: '/invoices', icon: Receipt },
-  { name: 'Customers', href: '/customers', icon: Users },
-  { name: 'Reports', href: '/reports', icon: BarChart3 },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Dashboard', key: 'nav.dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Product Master', key: 'nav.products', href: '/products', icon: Package },
+  { name: 'Inventory', key: 'nav.inventory', href: '/inventory', icon: Boxes },
+  { name: 'Quotations', key: 'nav.quotations', href: '/quotations', icon: FileText },
+  { name: 'Invoices', key: 'nav.invoices', href: '/invoices', icon: Receipt },
+  { name: 'Customers', key: 'nav.customers', href: '/customers', icon: Users },
+  { name: 'Reports', key: 'nav.reports', href: '/reports', icon: BarChart3 },
+  { name: 'Settings', key: 'nav.settings', href: '/settings', icon: Settings },
 ];
 
 export default function AppSidebar({ 
@@ -48,6 +50,7 @@ export default function AppSidebar({
   onToggleCollapse?: () => void;
 }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   return (
     <aside className={cn(
@@ -66,7 +69,7 @@ export default function AppSidebar({
               <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent block leading-tight">
                 FactoryOS
               </span>
-              <span className="text-xs block text-slate-500 font-medium">Cable Hub Edition</span>
+              <span className="text-xs block text-slate-500 font-medium">{t('nav.cableHubEdition')}</span>
             </div>
           )}
         </div>
@@ -97,7 +100,7 @@ export default function AppSidebar({
       <nav className={cn("flex-1 py-6 space-y-1 overflow-y-auto", collapsed ? "px-2" : "px-4")}>
         {!collapsed ? (
           <div className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider animate-in fade-in duration-300">
-            Main Menu
+            {t('nav.mainMenu')}
           </div>
         ) : (
           <div className="h-px bg-slate-800/80 my-4 mx-2" />
@@ -115,7 +118,7 @@ export default function AppSidebar({
             <Link
               key={item.href}
               href={item.href}
-              title={collapsed ? item.name : undefined}
+              title={collapsed ? t(item.key) : undefined}
               className={cn(
                 "flex items-center transition-all duration-200 group rounded-lg text-sm font-medium",
                 collapsed ? "justify-center p-2.5 w-10 h-10 mx-auto" : "gap-3 px-3 py-2.5",
@@ -130,7 +133,7 @@ export default function AppSidebar({
               )} />
               {!collapsed && (
                 <span className="truncate animate-in fade-in duration-350">
-                  {item.name}
+                  {t(item.key)}
                 </span>
               )}
             </Link>
@@ -147,7 +150,7 @@ export default function AppSidebar({
           {!collapsed && (
             <div className="overflow-hidden animate-in fade-in duration-350">
               <span className="text-sm font-semibold block text-slate-200 truncate">Bank Supharoek</span>
-              <span className="text-xs text-slate-500 block truncate">Administrator</span>
+              <span className="text-xs text-slate-500 block truncate">{t('common.administrator')}</span>
             </div>
           )}
         </div>

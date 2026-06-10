@@ -34,6 +34,7 @@ import {
   Calendar
 } from 'lucide-react';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/language-context';
 import { 
   LineChart, 
   Line, 
@@ -51,6 +52,7 @@ import {
 } from 'recharts';
 
 export default function DashboardPage() {
+  const { t, language } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -71,19 +73,28 @@ export default function DashboardPage() {
   // Recent invoices for a quick widget
   const recentInvoices = mockInvoices.slice(0, 3);
 
+  // Translate quotation status list for chart on the fly
+  const translatedQuotationStatus = mockQuotationStatus.map(item => ({
+    ...item,
+    name: item.name === 'Draft' ? (language === 'th' ? 'แบบร่าง' : 'Draft')
+          : item.name === 'Sent' ? (language === 'th' ? 'ส่งแล้ว' : 'Sent')
+          : item.name === 'Accepted' ? (language === 'th' ? 'ตอบรับแล้ว' : 'Accepted')
+          : (language === 'th' ? 'ปฏิเสธแล้ว' : 'Declined')
+  }));
+
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Executive Dashboard" 
-        description="Real-time operations summary and financial overview for FactoryOS."
+        title={t('dashboard.title')} 
+        description={t('dashboard.description')}
         actions={
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Download className="w-4 h-4" /> Export Report
+              <Download className="w-4 h-4" /> {t('common.exportReport')}
             </Button>
             <Link href="/quotations/new">
               <Button size="sm" className="flex items-center gap-1">
-                <PlusCircle className="w-4 h-4" /> Create Quotation
+                <PlusCircle className="w-4 h-4" /> {t('dashboard.createQuote')}
               </Button>
             </Link>
           </div>
@@ -96,7 +107,7 @@ export default function DashboardPage() {
         <Card className="hover:border-blue-200 transition-colors">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Revenue (YTD)</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.revenueYTD')}</span>
               <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
                 <DollarSign className="w-4 h-4" />
               </div>
@@ -106,7 +117,7 @@ export default function DashboardPage() {
                 {formatCurrency(totalRevenueYTD, false)}
               </h3>
               <p className="text-xs text-emerald-600 font-semibold flex items-center gap-1 mt-1 truncate">
-                <TrendingUp className="w-3.5 h-3.5 shrink-0" /> +25.5% vs Last Year
+                <TrendingUp className="w-3.5 h-3.5 shrink-0" /> +25.5% {t('dashboard.vsLastYear')}
               </p>
             </div>
           </CardContent>
@@ -116,7 +127,7 @@ export default function DashboardPage() {
         <Card className="hover:border-indigo-200 transition-colors">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Active Quotes</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.activeQuotes')}</span>
               <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600">
                 <FileText className="w-4 h-4" />
               </div>
@@ -124,7 +135,7 @@ export default function DashboardPage() {
             <div className="mt-4 min-w-0">
               <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate">{activeQuotesCount}</h3>
               <p className="text-xs text-slate-400 font-medium mt-1 truncate">
-                Draft, Sent & Accepted
+                {t('dashboard.activeQuotesDesc')}
               </p>
             </div>
           </CardContent>
@@ -134,7 +145,7 @@ export default function DashboardPage() {
         <Card className="hover:border-amber-200 transition-colors">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Pending Invoices</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.pendingInvoices')}</span>
               <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600">
                 <Receipt className="w-4 h-4" />
               </div>
@@ -142,7 +153,7 @@ export default function DashboardPage() {
             <div className="mt-4 min-w-0">
               <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate">{pendingInvoicesCount}</h3>
               <p className="text-xs text-slate-400 font-medium mt-1 truncate">
-                Unpaid / Partially Paid
+                {t('dashboard.pendingInvoicesDesc')}
               </p>
             </div>
           </CardContent>
@@ -152,7 +163,7 @@ export default function DashboardPage() {
         <Card className="hover:border-emerald-200 transition-colors">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Inventory Value</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.inventoryValue')}</span>
               <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
                 <Boxes className="w-4 h-4" />
               </div>
@@ -162,7 +173,7 @@ export default function DashboardPage() {
                 {formatCurrency(inventoryValue, false)}
               </h3>
               <p className="text-xs text-slate-400 font-medium mt-1 truncate">
-                Asset value at cost price
+                {t('dashboard.inventoryValueDesc')}
               </p>
             </div>
           </CardContent>
@@ -172,7 +183,7 @@ export default function DashboardPage() {
         <Card className="hover:border-rose-200 transition-colors">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Low Stock Alert</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.lowStockAlert')}</span>
               <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600">
                 <AlertTriangle className="w-4 h-4" />
               </div>
@@ -180,7 +191,7 @@ export default function DashboardPage() {
             <div className="mt-4 min-w-0">
               <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate">{lowStockCount}</h3>
               <p className="text-xs text-rose-600 font-semibold mt-1 truncate">
-                Needs procurement
+                {t('dashboard.lowStockDesc')}
               </p>
             </div>
           </CardContent>
@@ -190,7 +201,7 @@ export default function DashboardPage() {
         <Card className="hover:border-slate-300 transition-colors">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-slate-500 uppercase">Monthly Orders</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.monthlyOrders')}</span>
               <div className="p-1.5 rounded-lg bg-slate-50 text-slate-600">
                 <Calendar className="w-4 h-4" />
               </div>
@@ -198,7 +209,7 @@ export default function DashboardPage() {
             <div className="mt-4 min-w-0">
               <h3 className="text-lg xl:text-xl font-bold text-slate-900 tracking-tight truncate">{juneOrdersCount}</h3>
               <p className="text-xs text-slate-400 font-medium mt-1 truncate">
-                Completed orders in June
+                {t('dashboard.monthlyOrdersDesc')}
               </p>
             </div>
           </CardContent>
@@ -210,8 +221,8 @@ export default function DashboardPage() {
         {/* Chart 1: Revenue YTD Trend */}
         <Card className="p-1">
           <CardHeader>
-            <CardTitle>Monthly Revenue & Sales Orders</CardTitle>
-            <CardDescription>YTD performance showing sales growth and order counts.</CardDescription>
+            <CardTitle>{t('dashboard.chartRevenueSales')}</CardTitle>
+            <CardDescription>{t('dashboard.chartRevenueSalesDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             {mounted ? (
@@ -223,12 +234,12 @@ export default function DashboardPage() {
                   <YAxis yAxisId="right" orientation="right" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
                   <Tooltip formatter={(value, name) => [name === 'revenue' ? formatCurrency(value as number) : value, name]} />
                   <Legend verticalAlign="top" height={36} iconType="circle" />
-                  <Line yAxisId="left" type="monotone" dataKey="revenue" name="Revenue (THB)" stroke="#2563eb" strokeWidth={3} activeDot={{ r: 8 }} dot={{ r: 4 }} />
-                  <Line yAxisId="right" type="monotone" dataKey="orders" name="Orders Count" stroke="#10b981" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 3 }} />
+                  <Line yAxisId="left" type="monotone" dataKey="revenue" name={language === 'th' ? "รายได้ (บาท)" : "Revenue (THB)"} stroke="#2563eb" strokeWidth={3} activeDot={{ r: 8 }} dot={{ r: 4 }} />
+                  <Line yAxisId="right" type="monotone" dataKey="orders" name={language === 'th' ? "จำนวนสั่งซื้อ" : "Orders Count"} stroke="#10b981" strokeWidth={2} activeDot={{ r: 6 }} dot={{ r: 3 }} />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">Loading Chart...</div>
+              <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">{t('common.loading')}</div>
             )}
           </CardContent>
         </Card>
@@ -236,8 +247,8 @@ export default function DashboardPage() {
         {/* Chart 2: Category Sales */}
         <Card className="p-1">
           <CardHeader>
-            <CardTitle>Sales Share by Product Category</CardTitle>
-            <CardDescription>Product classification performance by total sold value.</CardDescription>
+            <CardTitle>{t('dashboard.chartCategorySales')}</CardTitle>
+            <CardDescription>{t('dashboard.chartCategorySalesDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="h-80 flex items-center justify-between">
             {mounted ? (
@@ -275,7 +286,7 @@ export default function DashboardPage() {
                 </div>
               </>
             ) : (
-              <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">Loading Chart...</div>
+              <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">{t('common.loading')}</div>
             )}
           </CardContent>
         </Card>
@@ -283,8 +294,8 @@ export default function DashboardPage() {
         {/* Chart 3: Top Selling Products */}
         <Card className="p-1">
           <CardHeader>
-            <CardTitle>Top Selling Cable Products</CardTitle>
-            <CardDescription>Ranking based on total revenue generated.</CardDescription>
+            <CardTitle>{t('dashboard.chartTopProducts')}</CardTitle>
+            <CardDescription>{t('dashboard.chartTopProductsDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             {mounted ? (
@@ -302,7 +313,7 @@ export default function DashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">Loading Chart...</div>
+              <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">{t('common.loading')}</div>
             )}
           </CardContent>
         </Card>
@@ -310,13 +321,13 @@ export default function DashboardPage() {
         {/* Chart 4: Quotation Status distribution */}
         <Card className="p-1">
           <CardHeader>
-            <CardTitle>Quotation Pipeline Status</CardTitle>
-            <CardDescription>Breakdown of all quotations issued to date.</CardDescription>
+            <CardTitle>{t('dashboard.chartQuotationPipeline')}</CardTitle>
+            <CardDescription>{t('dashboard.chartQuotationPipelineDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             {mounted ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockQuotationStatus} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <BarChart data={translatedQuotationStatus} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
                   <YAxis stroke="#94a3b8" fontSize={11} />
@@ -329,7 +340,7 @@ export default function DashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">Loading Chart...</div>
+              <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">{t('common.loading')}</div>
             )}
           </CardContent>
         </Card>
@@ -341,12 +352,12 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Recent Quotations</CardTitle>
-              <CardDescription>Latest quotations prepared by the sales team.</CardDescription>
+              <CardTitle>{t('dashboard.recentQuotes')}</CardTitle>
+              <CardDescription>{t('dashboard.recentQuotesDesc')}</CardDescription>
             </div>
             <Link href="/quotations">
               <Button variant="ghost" size="sm" className="text-xs flex items-center gap-1 font-semibold text-blue-600">
-                View All <ChevronRight className="w-3.5 h-3.5" />
+                {t('common.viewAll')} <ChevronRight className="w-3.5 h-3.5" />
               </Button>
             </Link>
           </CardHeader>
@@ -375,12 +386,12 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Outstanding Invoices</CardTitle>
-              <CardDescription>Invoices waiting for customer payments.</CardDescription>
+              <CardTitle>{t('dashboard.outstandingInvoices')}</CardTitle>
+              <CardDescription>{t('dashboard.outstandingInvoicesDesc')}</CardDescription>
             </div>
             <Link href="/invoices">
               <Button variant="ghost" size="sm" className="text-xs flex items-center gap-1 font-semibold text-blue-600">
-                View All <ChevronRight className="w-3.5 h-3.5" />
+                {t('common.viewAll')} <ChevronRight className="w-3.5 h-3.5" />
               </Button>
             </Link>
           </CardHeader>
@@ -397,7 +408,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="text-right space-y-1">
                     <span className="text-sm font-bold text-slate-950 block">{formatCurrency(inv.outstandingAmount)}</span>
-                    <span className="text-xs text-rose-500 block font-semibold">Due: {inv.dueDate}</span>
+                    <span className="text-xs text-rose-500 block font-semibold">{language === 'th' ? 'ครบกำหนด' : 'Due'}: {inv.dueDate}</span>
                   </div>
                 </div>
               ))}

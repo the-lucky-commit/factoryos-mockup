@@ -15,8 +15,10 @@ import {
   CheckSquare,
   Square
 } from 'lucide-react';
+import { useLanguage } from '@/lib/language-context';
 
 export default function SettingsPage() {
+  const { language, setLanguage, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'profile' | 'docs' | 'permissions'>('profile');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -44,16 +46,16 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-4xl relative">
       <PageHeader 
-        title="Platform Settings" 
-        description="Configure corporate metadata, document prefixes, and role-based permissions."
+        title={t('settings.title')} 
+        description={t('settings.description')}
         actions={
           saveSuccess ? (
             <span className="text-xs text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg flex items-center gap-1 animate-in fade-in duration-200">
-              <Check className="w-4 h-4" /> Settings Saved!
+              <Check className="w-4 h-4" /> {language === 'th' ? 'บันทึกข้อมูลเรียบร้อย!' : 'Settings Saved!'}
             </span>
           ) : (
             <Button size="sm" onClick={handleSave} className="flex items-center gap-1.5 bg-blue-600 text-white hover:bg-blue-700">
-              <Save className="w-4 h-4" /> Save Changes
+              <Save className="w-4 h-4" /> {t('common.save')}
             </Button>
           )
         }
@@ -69,7 +71,7 @@ export default function SettingsPage() {
               : "text-slate-500 hover:text-slate-800"
           }`}
         >
-          <Building className="w-3.5 h-3.5" /> Company Profile
+          <Building className="w-3.5 h-3.5" /> {language === 'th' ? 'ข้อมูลนิติบุคคล' : 'Company Profile'}
         </button>
         <button
           onClick={() => setActiveTab('docs')}
@@ -79,7 +81,7 @@ export default function SettingsPage() {
               : "text-slate-500 hover:text-slate-800"
           }`}
         >
-          <FileSignature className="w-3.5 h-3.5" /> Document Templates
+          <FileSignature className="w-3.5 h-3.5" /> {language === 'th' ? 'ตั้งค่าเอกสาร' : 'Document Templates'}
         </button>
         <button
           onClick={() => setActiveTab('permissions')}
@@ -89,7 +91,7 @@ export default function SettingsPage() {
               : "text-slate-500 hover:text-slate-800"
           }`}
         >
-          <ShieldCheck className="w-3.5 h-3.5" /> Access Permissions
+          <ShieldCheck className="w-3.5 h-3.5" /> {language === 'th' ? 'สิทธิ์การใช้งาน' : 'Access Permissions'}
         </button>
       </div>
 
@@ -97,14 +99,16 @@ export default function SettingsPage() {
       {activeTab === 'profile' && (
         <Card>
           <CardHeader>
-            <CardTitle>Company Information</CardTitle>
-            <CardDescription>This information will appear on print documents (Quotations, Invoices, Delivery notes).</CardDescription>
+            <CardTitle>{t('settings.companyInfo')}</CardTitle>
+            <CardDescription>{t('settings.companyInfoDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-xs font-semibold text-slate-700">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Company Name */}
               <div className="md:col-span-2">
-                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Company Registered Name</label>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                  {language === 'th' ? 'ชื่อจดทะเบียนนิติบุคคล' : 'Company Registered Name'}
+                </label>
                 <input 
                   type="text"
                   value={companyName}
@@ -115,7 +119,9 @@ export default function SettingsPage() {
 
               {/* Tax ID */}
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Thailand Tax ID</label>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                  {language === 'th' ? 'เลขประจำตัวผู้เสียภาษี' : 'Thailand Tax ID'}
+                </label>
                 <input 
                   type="text"
                   value={taxId}
@@ -126,7 +132,9 @@ export default function SettingsPage() {
 
               {/* Phone */}
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Office Telephone</label>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                  {language === 'th' ? 'เบอร์โทรศัพท์สำนักงาน' : 'Office Telephone'}
+                </label>
                 <input 
                   type="text"
                   value={phone}
@@ -137,7 +145,9 @@ export default function SettingsPage() {
 
               {/* Contact Email */}
               <div className="md:col-span-2">
-                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Billing & Finance Email</label>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                  {language === 'th' ? 'อีเมลแผนกบัญชีและการเงิน' : 'Billing & Finance Email'}
+                </label>
                 <input 
                   type="email"
                   value={email}
@@ -148,13 +158,47 @@ export default function SettingsPage() {
 
               {/* Address */}
               <div className="md:col-span-2">
-                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Registered Address</label>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                  {language === 'th' ? 'ที่อยู่จดทะเบียนนิติบุคคล' : 'Registered Address'}
+                </label>
                 <textarea 
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="w-full p-2.5 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-900 font-semibold"
                   rows={3}
                 />
+              </div>
+
+              {/* Language Selection Setting */}
+              <div className="md:col-span-2 border-t border-slate-150 pt-4 mt-2">
+                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                  {t('settings.langSelect')}
+                </label>
+                <span className="text-[10px] text-slate-400 block mb-3 font-semibold">
+                  {t('settings.langSettingDesc')}
+                </span>
+                <div className="flex flex-col sm:flex-row gap-4 mt-2 bg-slate-50 p-3 rounded-lg border border-slate-100 w-fit">
+                  <label className="flex items-center gap-2.5 cursor-pointer font-bold text-sm text-slate-700">
+                    <input
+                      type="radio"
+                      name="language"
+                      checked={language === 'th'}
+                      onChange={() => setLanguage('th')}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-350"
+                    />
+                    <span>{t('settings.thai')}</span>
+                  </label>
+                  <label className="flex items-center gap-2.5 cursor-pointer font-bold text-sm text-slate-700">
+                    <input
+                      type="radio"
+                      name="language"
+                      checked={language === 'en'}
+                      onChange={() => setLanguage('en')}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-350"
+                    />
+                    <span>{t('settings.english')}</span>
+                  </label>
+                </div>
               </div>
             </div>
           </CardContent>

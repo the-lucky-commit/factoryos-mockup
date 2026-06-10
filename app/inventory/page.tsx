@@ -17,7 +17,10 @@ import {
   Sliders, 
   AlertTriangle,
   X,
-  Sparkles
+  Sparkles,
+  Boxes,
+  TrendingUp,
+  AlertOctagon
 } from 'lucide-react';
 
 import { useSecurity } from '@/lib/security-context';
@@ -152,45 +155,81 @@ export default function InventoryPage() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Metric 1 */}
-        <Card className="hover:border-slate-300 transition-colors">
+        <Card className="hover:border-slate-350 hover:shadow-lg hover:shadow-slate-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.totalStockItems')}</span>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl font-bold text-slate-900">{formatNumber(totalStockItems)}</span>
-              <span className="text-xs font-semibold text-slate-500">{t('inventory.metersRolls')}</span>
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.totalStockItems')}</span>
+              <div className="p-1.5 rounded-lg bg-slate-100 text-slate-500">
+                <Boxes className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight truncate">
+                {formatNumber(totalStockItems)}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('inventory.metersRolls')}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Metric 2 */}
-        <Card className="hover:border-amber-300 transition-colors">
+        <Card className="hover:border-amber-300 hover:shadow-lg hover:shadow-amber-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.lowStockAlert')}</span>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl font-bold text-amber-600">{lowStockCount}</span>
-              <span className="text-xs font-semibold text-slate-500">{t('inventory.itemsBelowMin')}</span>
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.lowStockAlert')}</span>
+              <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600">
+                <AlertTriangle className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-amber-600 tracking-tight truncate">
+                {lowStockCount}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('inventory.itemsBelowMin')}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Metric 3 */}
-        <Card className="hover:border-rose-300 transition-colors">
+        <Card className="hover:border-rose-300 hover:shadow-lg hover:shadow-rose-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.outOfStock')}</span>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl font-bold text-rose-600">{outOfStockCount}</span>
-              <span className="text-xs font-semibold text-slate-500">{t('inventory.emptySkuShelves')}</span>
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.outOfStock')}</span>
+              <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600">
+                <AlertOctagon className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-rose-600 tracking-tight truncate">
+                {outOfStockCount}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('inventory.emptySkuShelves')}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Metric 4 */}
-        <Card className="hover:border-emerald-300 transition-colors">
+        <Card className="hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.warehouseValue')}</span>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl font-bold text-emerald-600">{formatCurrency(warehouseValue)}</span>
-              <span className="text-xs font-semibold text-slate-500">{t('inventory.totalAssetCost')}</span>
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.warehouseValue')}</span>
+              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+                <TrendingUp className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-emerald-600 tracking-tight truncate" title={formatCurrency(warehouseValue)}>
+                {formatCurrency(warehouseValue)}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('inventory.totalAssetCost')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -218,12 +257,12 @@ export default function InventoryPage() {
                 <table className="w-full min-w-[600px] text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50 text-slate-500 text-[10px] font-bold uppercase tracking-wider">
-                      <th className="px-6 py-3">{t('products.sku')}</th>
+                      <th className="px-6 py-3 w-40">{t('products.sku')}</th>
                       <th className="px-6 py-3">{t('products.productName')}</th>
-                      <th className="px-6 py-3 text-right">{t('inventory.availableQty')}</th>
-                      <th className="px-6 py-3 text-right">{t('inventory.minQty')}</th>
-                      <th className="px-6 py-3 text-center">{t('products.unit')}</th>
-                      <th className="px-6 py-3 text-center">{t('products.status')}</th>
+                      <th className="px-6 py-3 text-right w-32">{t('inventory.availableQty')}</th>
+                      <th className="px-6 py-3 text-right w-24">{t('inventory.minQty')}</th>
+                      <th className="px-6 py-3 text-center w-20">{t('products.unit')}</th>
+                      <th className="px-6 py-3 text-center w-28">{t('products.status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-sm">
@@ -252,7 +291,9 @@ export default function InventoryPage() {
                         <td className="px-6 py-3.5 text-right font-medium text-slate-400">
                           {formatNumber(p.minStock)}
                         </td>
-                        <td className="px-6 py-3.5 text-center font-semibold text-slate-500">{p.unit}</td>
+                        <td className="px-6 py-3.5 text-center font-semibold text-slate-500">
+                          {p.unit === 'Meter' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'เมตร' : 'Meter') : (t('common.viewAll') === 'ดูทั้งหมด' ? 'ม้วน' : 'Roll')}
+                        </td>
                         <td className="px-6 py-3.5 text-center">
                           <StatusBadge status={p.status} />
                         </td>

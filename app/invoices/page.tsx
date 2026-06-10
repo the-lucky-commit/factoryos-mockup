@@ -108,55 +108,83 @@ export default function InvoicesPage() {
       {/* Financial Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1 */}
-        <Card className="hover:border-slate-300 transition-colors">
+        <Card className="hover:border-slate-350 hover:shadow-lg hover:shadow-slate-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">
-              {t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดออกบิลรวมทั้งหมด YTD' : 'Total Billed YTD'}
-            </span>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl font-bold text-slate-900">{formatCurrency(metrics.totalInvoiced)}</span>
-              <div className="p-1 rounded bg-slate-100 text-slate-500">
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดออกบิลรวมทั้งหมด YTD' : 'Total Billed YTD'}
+              </span>
+              <div className="p-1.5 rounded-lg bg-slate-100 text-slate-500">
                 <Receipt className="w-4 h-4" />
               </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight truncate" title={formatCurrency(metrics.totalInvoiced)}>
+                {formatCurrency(metrics.totalInvoiced)}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดออกใบแจ้งหนี้รวม YTD' : 'Accumulated billed amount YTD'}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Card 2 */}
-        <Card className="hover:border-emerald-300 transition-colors">
+        <Card className="hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('invoices.collectedAmount')}</span>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl font-bold text-emerald-600">{formatCurrency(metrics.paidAmount)}</span>
-              <div className="p-1 rounded bg-emerald-50 text-emerald-500">
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('invoices.collectedAmount')}</span>
+              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
                 <PiggyBank className="w-4 h-4" />
               </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-emerald-600 tracking-tight truncate" title={formatCurrency(metrics.paidAmount)}>
+                {formatCurrency(metrics.paidAmount)}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดรับชำระเงินเรียบร้อยแล้ว' : 'Collected and settled funds'}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Card 3 */}
-        <Card className="hover:border-amber-300 transition-colors">
+        <Card className="hover:border-amber-300 hover:shadow-lg hover:shadow-amber-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('invoices.totalOutstanding')}</span>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl font-bold text-amber-600">{formatCurrency(metrics.outstandingAmount)}</span>
-              <div className="p-1 rounded bg-amber-50 text-amber-500">
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('invoices.totalOutstanding')}</span>
+              <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600">
                 <CreditCard className="w-4 h-4" />
               </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-amber-600 tracking-tight truncate" title={formatCurrency(metrics.outstandingAmount)}>
+                {formatCurrency(metrics.outstandingAmount)}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดค้างชำระทั้งหมดในระบบ' : 'Total accounts receivable balance'}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Card 4 */}
-        <Card className="hover:border-rose-300 transition-colors">
+        <Card className="hover:border-rose-300 hover:shadow-lg hover:shadow-rose-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('invoices.overdueCount')}</span>
-            <div className="flex items-baseline justify-between mt-2">
-              <span className="text-2xl font-bold text-rose-600">{formatCurrency(metrics.overdueAmount)}</span>
-              <div className="p-1 rounded bg-rose-50 text-rose-500">
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('invoices.overdueCount')}</span>
+              <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600">
                 <AlertCircle className="w-4 h-4" />
               </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-rose-600 tracking-tight truncate" title={formatCurrency(metrics.overdueAmount)}>
+                {formatCurrency(metrics.overdueAmount)}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'เกินกำหนดชำระเครดิตเทอม' : 'Overdue receivable balance'}
+              </p>
             </div>
           </CardContent>
         </Card>

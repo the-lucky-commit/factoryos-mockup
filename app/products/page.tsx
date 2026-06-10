@@ -128,10 +128,12 @@ export default function ProductMasterPage() {
                         key={p.sku} 
                         onClick={() => setSelectedProduct(p)}
                         className={`hover:bg-slate-50/80 cursor-pointer transition-colors ${
-                          selectedProduct?.sku === p.sku ? "bg-blue-50/40 font-medium" : ""
+                          selectedProduct?.sku === p.sku ? "bg-blue-50/50" : ""
                         }`}
                       >
-                        <td className="px-6 py-3.5 font-bold text-slate-900">
+                        <td className={`px-6 py-3.5 font-bold text-slate-900 border-l-4 transition-all duration-200 ${
+                          selectedProduct?.sku === p.sku ? "border-l-blue-600" : "border-l-transparent"
+                        }`}>
                           <div className="flex items-center gap-3">
                             {p.image ? (
                               <img 

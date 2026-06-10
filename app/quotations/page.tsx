@@ -17,7 +17,9 @@ import {
   Mail, 
   X,
   Building,
-  User,
+  CheckCircle,
+  Clock,
+  AlertOctagon
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSecurity } from '@/lib/security-context';
@@ -69,34 +71,81 @@ export default function QuotationsPage() {
 
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white hover:border-blue-200 transition-colors">
+        {/* Card 1 */}
+        <Card className="bg-white hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('quotations.totalProposalsYtd')}</span>
-            <h3 className="text-xl font-bold text-slate-900 mt-2">{mockQuotations.length}</h3>
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('quotations.totalProposalsYtd')}</span>
+              <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
+                <FileText className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight truncate">{mockQuotations.length}</h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'จำนวนร่างและออกใบเสนอราคาสะสม' : 'Total drafted and issued proposals'}
+              </p>
+            </div>
           </CardContent>
         </Card>
-        <Card className="bg-white hover:border-emerald-200 transition-colors">
+
+        {/* Card 2 */}
+        <Card className="bg-white hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('quotations.acceptedDeals')}</span>
-            <h3 className="text-xl font-bold text-emerald-600 mt-2">
-              {mockQuotations.filter(q => q.status === 'Accepted').length}
-            </h3>
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('quotations.acceptedDeals')}</span>
+              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+                <CheckCircle className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-emerald-600 tracking-tight truncate">
+                {mockQuotations.filter(q => q.status === 'Accepted').length}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'โครงการที่ตกลงลงนามสัญญาแล้ว' : 'Proposals signed and accepted'}
+              </p>
+            </div>
           </CardContent>
         </Card>
-        <Card className="bg-white hover:border-blue-200 transition-colors">
+
+        {/* Card 3 */}
+        <Card className="bg-white hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('quotations.sentAndPending')}</span>
-            <h3 className="text-xl font-bold text-blue-600 mt-2">
-              {mockQuotations.filter(q => q.status === 'Sent').length}
-            </h3>
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('quotations.sentAndPending')}</span>
+              <div className="p-1.5 rounded-lg bg-blue-50/70 text-blue-700">
+                <Clock className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-blue-600 tracking-tight truncate">
+                {mockQuotations.filter(q => q.status === 'Sent').length}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'ส่งข้อเสนอและอยู่ระหว่างพิจารณา' : 'Proposals sent and pending review'}
+              </p>
+            </div>
           </CardContent>
         </Card>
-        <Card className="bg-white hover:border-rose-200 transition-colors">
+
+        {/* Card 4 */}
+        <Card className="bg-white hover:border-rose-300 hover:shadow-lg hover:shadow-rose-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">{t('quotations.expiredRejected')}</span>
-            <h3 className="text-xl font-bold text-rose-600 mt-2">
-              {mockQuotations.filter(q => q.status === 'Expired' || q.status === 'Rejected').length}
-            </h3>
+            <div className="flex justify-between items-start">
+              <span className="text-[10px] uppercase font-bold text-slate-400">{t('quotations.expiredRejected')}</span>
+              <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600">
+                <AlertOctagon className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="mt-4 min-w-0">
+              <h3 className="text-2xl font-black text-rose-600 tracking-tight truncate">
+                {mockQuotations.filter(q => q.status === 'Expired' || q.status === 'Rejected').length}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1 truncate">
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'หมดอายุหรือถูกปัดตกโดยฝ่ายจัดซื้อ' : 'Proposals expired or rejected by client'}
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -128,7 +177,12 @@ export default function QuotationsPage() {
                     : "text-slate-500 hover:text-slate-800"
                 }`}
               >
-                {status === 'All' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'ทั้งหมด' : t('common.viewAll')) : status}
+                {status === 'All' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'ทั้งหมด' : t('common.viewAll')) : 
+                 status === 'Draft' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'แบบร่าง' : 'Draft') :
+                 status === 'Sent' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'ส่งแล้ว' : 'Sent') :
+                 status === 'Accepted' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอมรับแล้ว' : 'Accepted') :
+                 status === 'Rejected' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'ปฏิเสธแล้ว' : 'Rejected') :
+                 (t('common.viewAll') === 'ดูทั้งหมด' ? 'หมดอายุ' : 'Expired')}
               </button>
             ))}
           </div>
@@ -318,7 +372,7 @@ export default function QuotationsPage() {
                   <div className="bg-slate-50 border border-slate-100 p-3 rounded-lg leading-normal text-[11px]">
                     <span className="font-bold text-slate-800 block">{t('common.viewAll') === 'ดูทั้งหมด' ? 'ธนาคารไทยพาณิชย์ (SCB)' : 'Siam Commercial Bank (SCB)'}</span>
                     <span className="text-slate-600 block mt-0.5">{t('common.viewAll') === 'ดูทั้งหมด' ? 'ชื่อบัญชี: บริษัท เคเบิ้ล ฮับ ซัพพลาย จำกัด' : 'Account Name: Cable Hub Supply Co., Ltd.'}</span>
-                    <span className="font-bold text-slate-900 block mt-0.5">Account No: 123-4-56789-0</span>
+                    <span className="font-bold text-slate-900 block mt-0.5">No: 123-4-56789-0</span>
                   </div>
                 </div>
 

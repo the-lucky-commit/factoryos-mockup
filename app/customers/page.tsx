@@ -91,10 +91,12 @@ export default function CustomersPage() {
                         key={c.id} 
                         onClick={() => setSelectedCustomer(c)}
                         className={`hover:bg-slate-50/80 cursor-pointer transition-colors ${
-                          selectedCustomer?.id === c.id ? "bg-blue-50/40 font-medium" : ""
+                          selectedCustomer?.id === c.id ? "bg-blue-50/50" : ""
                         }`}
                       >
-                        <td className="px-6 py-4">
+                        <td className={`px-6 py-4 border-l-4 transition-all duration-200 ${
+                          selectedCustomer?.id === c.id ? "border-l-blue-600" : "border-l-transparent"
+                        }`}>
                           <div>
                             <span className="text-slate-900 block font-bold text-sm">{c.companyName}</span>
                             <span className="text-xs text-slate-400 block mt-0.5">ID: {c.id} | {t('customers.taxId')}: {c.taxId}</span>

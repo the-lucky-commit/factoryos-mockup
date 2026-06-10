@@ -315,7 +315,7 @@ export default function ReportsPage() {
         <div className="space-y-6">
           {/* receivables stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="bg-amber-50/30 border-amber-100">
+            <Card className="bg-amber-50/30 border-amber-100 hover:border-amber-300 hover:shadow-lg hover:shadow-amber-500/5 hover:-translate-y-0.5 transition-all duration-300">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold text-slate-500 uppercase">{t('invoices.totalOutstanding')}</CardTitle>
                 <h2 className="text-2xl font-black text-amber-600 mt-1">{formatCurrency(totalOutstanding)}</h2>
@@ -325,7 +325,7 @@ export default function ReportsPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-rose-50/30 border-rose-100">
+            <Card className="bg-rose-50/30 border-rose-100 hover:border-rose-300 hover:shadow-lg hover:shadow-rose-500/5 hover:-translate-y-0.5 transition-all duration-300">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold text-slate-500 uppercase">{t('common.viewAll') === 'ดูทั้งหมด' ? 'ลูกหนี้ที่พ้นกำหนดรับชำระ' : 'Overdue Collections'}</CardTitle>
                 <h2 className="text-2xl font-black text-rose-600 mt-1">{formatCurrency(totalOverdue)}</h2>

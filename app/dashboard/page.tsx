@@ -104,7 +104,7 @@ export default function DashboardPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {/* Card 1: Revenue YTD */}
-        <Card className="hover:border-blue-200 transition-colors">
+        <Card className="hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.revenueYTD')}</span>
@@ -124,7 +124,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Card 2: Active Quotes */}
-        <Card className="hover:border-indigo-200 transition-colors">
+        <Card className="hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.activeQuotes')}</span>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Card 3: Pending Invoices */}
-        <Card className="hover:border-amber-200 transition-colors">
+        <Card className="hover:border-amber-300 hover:shadow-lg hover:shadow-amber-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.pendingInvoices')}</span>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Card 4: Inventory Asset Value */}
-        <Card className="hover:border-emerald-200 transition-colors">
+        <Card className="hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.inventoryValue')}</span>
@@ -180,7 +180,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Card 5: Low Stock Items */}
-        <Card className="hover:border-rose-200 transition-colors">
+        <Card className="hover:border-rose-300 hover:shadow-lg hover:shadow-rose-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.lowStockAlert')}</span>
@@ -198,7 +198,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Card 6: June Orders */}
-        <Card className="hover:border-slate-300 transition-colors">
+        <Card className="hover:border-slate-350 hover:shadow-lg hover:shadow-slate-500/5 hover:-translate-y-0.5 transition-all duration-300">
           <CardContent className="p-5">
             <div className="flex justify-between items-start">
               <span className="text-xs font-semibold text-slate-500 uppercase">{t('dashboard.monthlyOrders')}</span>

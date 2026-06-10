@@ -14,6 +14,7 @@ export interface Product {
   minStock: number;
   status: 'In Stock' | 'Low Stock' | 'Out of Stock';
   datasheet: boolean;
+  image?: string;
 }
 
 export interface Customer {

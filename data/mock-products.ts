@@ -16,7 +16,8 @@ export const mockProducts: Product[] = [
     stock: 1200,
     minStock: 200,
     status: "In Stock",
-    datasheet: true
+    datasheet: true,
+    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&auto=format&fit=crop&q=60"
   },
   {
     sku: "CV-1X95-0.6/1KV",
@@ -33,7 +34,8 @@ export const mockProducts: Product[] = [
     stock: 800,
     minStock: 150,
     status: "In Stock",
-    datasheet: true
+    datasheet: true,
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&auto=format&fit=crop&q=60"
   },
   {
     sku: "NYY-4X16-0.6/1KV",
@@ -50,7 +52,8 @@ export const mockProducts: Product[] = [
     stock: 450,
     minStock: 100,
     status: "In Stock",
-    datasheet: true
+    datasheet: true,
+    image: "https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=400&auto=format&fit=crop&q=60"
   },
   {
     sku: "NYY-4X25-0.6/1KV",
@@ -67,7 +70,8 @@ export const mockProducts: Product[] = [
     stock: 80,
     minStock: 100,
     status: "Low Stock",
-    datasheet: true
+    datasheet: true,
+    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=400&auto=format&fit=crop&q=60"
   },
   {
     sku: "VCT-4X2.5-450/750V",
@@ -84,7 +88,8 @@ export const mockProducts: Product[] = [
     stock: 2500,
     minStock: 500,
     status: "In Stock",
-    datasheet: true
+    datasheet: true,
+    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=400&auto=format&fit=crop&q=60"
   },
   {
     sku: "THW-1X10-450/750V",
@@ -101,7 +106,8 @@ export const mockProducts: Product[] = [
     stock: 15,
     minStock: 30,
     status: "Low Stock",
-    datasheet: false
+    datasheet: false,
+    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&auto=format&fit=crop&q=60"
   },
   {
     sku: "THW-1X2.5-450/750V-G",
@@ -118,7 +124,8 @@ export const mockProducts: Product[] = [
     stock: 0,
     minStock: 20,
     status: "Out of Stock",
-    datasheet: true
+    datasheet: true,
+    image: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=400&auto=format&fit=crop&q=60"
   },
   {
     sku: "CTL-12X1.5-0.6/1KV",
@@ -135,7 +142,8 @@ export const mockProducts: Product[] = [
     stock: 600,
     minStock: 100,
     status: "In Stock",
-    datasheet: true
+    datasheet: true,
+    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=60"
   },
   {
     sku: "AL-THW-A-1X70-450/750V",
@@ -152,7 +160,8 @@ export const mockProducts: Product[] = [
     stock: 3500,
     minStock: 800,
     status: "In Stock",
-    datasheet: true
+    datasheet: true,
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&auto=format&fit=crop&q=60"
   },
   {
     sku: "FLEX-3X1.5-ORANGE",
@@ -169,6 +178,7 @@ export const mockProducts: Product[] = [
     stock: 140,
     minStock: 150,
     status: "Low Stock",
-    datasheet: false
+    datasheet: false,
+    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=400&auto=format&fit=crop&q=60"
   }
 ];

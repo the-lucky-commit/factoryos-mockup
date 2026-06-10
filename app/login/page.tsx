@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { Cable, KeyRound, User, AlertCircle, ArrowRight } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/lib/language-context';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,11 +20,9 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
-    // Mock validation as requested
     if (username === 'admin' && password === 'admin1234') {
       localStorage.setItem('factoryos_auth', 'true');
       
-      // Delay slightly for mock realism
       setTimeout(() => {
         setLoading(false);
         router.push('/dashboard');
@@ -30,7 +30,7 @@ export default function LoginPage() {
     } else {
       setTimeout(() => {
         setLoading(false);
-        setError('Invalid username or password. Please try again.');
+        setError(t('login.invalidAuth'));
       }, 500);
     }
   };
@@ -47,11 +47,11 @@ export default function LoginPage() {
             <div className="mx-auto w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 mb-4">
               <Cable className="w-6 h-6" />
             </div>
-            <CardTitle className="text-2xl font-black tracking-tight text-slate-900">
-              Welcome to FactoryOS
+            <CardTitle className="text-2xl font-black tracking-tight text-slate-900 font-sans">
+              {t('login.welcomeTitle')}
             </CardTitle>
             <CardDescription className="text-xs font-semibold text-slate-400 mt-1">
-              Industrial Cable Hub & Business Operating System
+              {t('login.systemDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -67,7 +67,7 @@ export default function LoginPage() {
             <form onSubmit={handleLogin} className="space-y-4">
               {/* Username field */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Username</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">{t('login.username')}</label>
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
@@ -75,7 +75,7 @@ export default function LoginPage() {
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter your username"
+                    placeholder={t('login.usernamePlaceholder')}
                     className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700 font-semibold"
                   />
                 </div>
@@ -83,7 +83,7 @@ export default function LoginPage() {
 
               {/* Password field */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Password</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">{t('login.password')}</label>
                 <div className="relative">
                   <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
@@ -91,7 +91,7 @@ export default function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
+                    placeholder={t('login.passwordPlaceholder')}
                     className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700 font-mono"
                   />
                 </div>
@@ -106,11 +106,11 @@ export default function LoginPage() {
                 {loading ? (
                   <>
                     <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
-                    Authenticating...
+                    {t('login.authenticating')}
                   </>
                 ) : (
                   <>
-                    Sign In <ArrowRight className="w-4 h-4" />
+                    {t('login.signInBtn')} <ArrowRight className="w-4 h-4 font-bold" />
                   </>
                 )}
               </Button>
@@ -122,15 +122,15 @@ export default function LoginPage() {
         <div className="bg-slate-100 border border-slate-200 rounded-lg p-4 text-xs space-y-2">
           <div className="flex items-center gap-1.5 text-slate-700 font-bold">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-            <span>Demo System Credentials</span>
+            <span>{t('login.demoCredentials')}</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-slate-500 font-semibold">
             <div>
-              <span className="text-[10px] text-slate-400 uppercase block">Username</span>
+              <span className="text-[10px] text-slate-400 uppercase block">{t('login.username')}</span>
               <span className="text-slate-800 font-mono select-all font-bold">admin</span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 uppercase block">Password</span>
+              <span className="text-[10px] text-slate-400 uppercase block">{t('login.password')}</span>
               <span className="text-slate-800 font-mono select-all font-bold">admin1234</span>
             </div>
           </div>

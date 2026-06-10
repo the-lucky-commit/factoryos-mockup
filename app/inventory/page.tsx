@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import PageHeader from '@/components/layout/page-header';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,10 +13,7 @@ import { formatCurrency, formatNumber, formatDate } from '@/lib/utils';
 import { 
   ArrowDownLeft, 
   ArrowUpRight, 
-  Settings, 
   History, 
-  PlusCircle, 
-  MinusCircle, 
   Sliders, 
   AlertTriangle,
   X,
@@ -24,14 +21,17 @@ import {
 } from 'lucide-react';
 
 import { useSecurity } from '@/lib/security-context';
+import { useLanguage } from '@/lib/language-context';
 import AccessDenied from '@/components/layout/access-denied';
 
 export default function InventoryPage() {
   const { checkPermission, logAction } = useSecurity();
+  const { t } = useLanguage();
 
   if (!checkPermission('process_inventory')) {
     return <AccessDenied moduleNameTh="คลังสินค้า (Inventory)" moduleNameEn="Inventory" />;
   }
+
   // Local state to simulate live inventory operations
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [movements, setMovements] = useState<InventoryMovement[]>(mockInventoryMovements);
@@ -41,7 +41,7 @@ export default function InventoryPage() {
   const [selectedSku, setSelectedSku] = useState(mockProducts[0]?.sku || '');
   const [qtyInput, setQtyInput] = useState<number>(100);
   const [notesInput, setNotesInput] = useState('');
-  const [operatorInput, setOperatorInput] = useState('Bank Supharoek');
+  const [operatorInput, setOperatorInput] = useState('สมชาย ยิ่งเจริญ');
 
   // Summary Metrics based on state
   const totalStockItems = products.reduce((sum, p) => sum + p.stock, 0);
@@ -52,7 +52,7 @@ export default function InventoryPage() {
   // Stock action execution
   const handleExecuteAction = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedSku || qtyInput <= 0) return;
+    if (!selectedSku || qtyInput === 0) return;
 
     // Find the product being updated
     const targetProduct = products.find(p => p.sku === selectedSku);
@@ -60,25 +60,21 @@ export default function InventoryPage() {
 
     let qtyChange = qtyInput;
     let movementType: InventoryMovement['type'] = 'Receive Stock';
-    let alertMsg = '';
 
     if (activeAction === 'Receive') {
-      qtyChange = qtyInput;
+      qtyChange = Math.abs(qtyInput);
       movementType = 'Receive Stock';
-      alertMsg = `Received ${qtyInput} unit(s) of ${targetProduct.name}`;
     } else if (activeAction === 'Issue') {
-      if (targetProduct.stock < qtyInput) {
+      const issueQty = Math.abs(qtyInput);
+      if (targetProduct.stock < issueQty) {
         alert("Error: Insufficient stock. Cannot issue more than available stock.");
         return;
       }
-      qtyChange = -qtyInput;
+      qtyChange = -issueQty;
       movementType = 'Issue Stock';
-      alertMsg = `Issued ${qtyInput} unit(s) of ${targetProduct.name}`;
     } else if (activeAction === 'Adjust') {
-      // Adjustment can be positive or negative
       qtyChange = qtyInput;
       movementType = 'Adjust Stock';
-      alertMsg = `Adjusted ${targetProduct.name} stock by ${qtyInput}`;
     }
 
     // Update Product list state
@@ -114,7 +110,7 @@ export default function InventoryPage() {
 
     setProducts(updatedProducts);
     setMovements([newMovement, ...movements]);
-    logAction(`Inventory: ${movementType} (${Math.abs(qtyChange)} units) for SKU ${selectedSku} - ${targetProduct.name}`, 'Success');
+    logAction(`Inventory: ${movementType} (${Math.abs(qtyChange)} units) for SKU ${selectedSku} - ${targetProduct.name}`, 'Success', operatorInput);
     
     // Close Modal and Reset Form
     setActiveAction(null);
@@ -124,8 +120,8 @@ export default function InventoryPage() {
   return (
     <div className="space-y-6 relative">
       <PageHeader 
-        title="Stock & Inventory Control" 
-        description="Monitor physical stock levels, execute stock operations, and review movement audits."
+        title={t('inventory.title')} 
+        description={t('inventory.description')}
         actions={
           <div className="flex gap-2">
             <Button 
@@ -133,21 +129,21 @@ export default function InventoryPage() {
               onClick={() => { setActiveAction('Receive'); setQtyInput(100); }} 
               className="flex items-center gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
             >
-              <ArrowDownLeft className="w-4 h-4 text-emerald-500" /> Receive Stock
+              <ArrowDownLeft className="w-4 h-4 text-emerald-500" /> {t('inventory.receiveStock')}
             </Button>
             <Button 
               variant="outline" 
               onClick={() => { setActiveAction('Issue'); setQtyInput(100); }} 
               className="flex items-center gap-1.5 border-rose-200 text-rose-700 hover:bg-rose-50 hover:text-rose-800"
             >
-              <ArrowUpRight className="w-4 h-4 text-rose-500" /> Issue Stock
+              <ArrowUpRight className="w-4 h-4 text-rose-500" /> {t('inventory.issueStock')}
             </Button>
             <Button 
               variant="outline" 
               onClick={() => { setActiveAction('Adjust'); setQtyInput(0); }} 
               className="flex items-center gap-1.5 border-amber-200 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
             >
-              <Sliders className="w-4 h-4 text-amber-500" /> Adjust Stock
+              <Sliders className="w-4 h-4 text-amber-500" /> {t('inventory.adjustStock')}
             </Button>
           </div>
         }
@@ -158,10 +154,10 @@ export default function InventoryPage() {
         {/* Metric 1 */}
         <Card className="hover:border-slate-300 transition-colors">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">Total Stock Items</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.totalStockItems')}</span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl font-bold text-slate-900">{formatNumber(totalStockItems)}</span>
-              <span className="text-xs font-semibold text-slate-500">Meters/Rolls</span>
+              <span className="text-xs font-semibold text-slate-500">{t('inventory.metersRolls')}</span>
             </div>
           </CardContent>
         </Card>
@@ -169,10 +165,10 @@ export default function InventoryPage() {
         {/* Metric 2 */}
         <Card className="hover:border-amber-300 transition-colors">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">Low Stock Alert</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.lowStockAlert')}</span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl font-bold text-amber-600">{lowStockCount}</span>
-              <span className="text-xs font-semibold text-slate-500">Items below min</span>
+              <span className="text-xs font-semibold text-slate-500">{t('inventory.itemsBelowMin')}</span>
             </div>
           </CardContent>
         </Card>
@@ -180,10 +176,10 @@ export default function InventoryPage() {
         {/* Metric 3 */}
         <Card className="hover:border-rose-300 transition-colors">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">Out of Stock</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.outOfStock')}</span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl font-bold text-rose-600">{outOfStockCount}</span>
-              <span className="text-xs font-semibold text-slate-500">Empty SKU shelves</span>
+              <span className="text-xs font-semibold text-slate-500">{t('inventory.emptySkuShelves')}</span>
             </div>
           </CardContent>
         </Card>
@@ -191,10 +187,10 @@ export default function InventoryPage() {
         {/* Metric 4 */}
         <Card className="hover:border-emerald-300 transition-colors">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">Warehouse YTD Value</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400">{t('inventory.warehouseValue')}</span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl font-bold text-emerald-600">{formatCurrency(warehouseValue)}</span>
-              <span className="text-xs font-semibold text-slate-500">Total Asset Cost</span>
+              <span className="text-xs font-semibold text-slate-500">{t('inventory.totalAssetCost')}</span>
             </div>
           </CardContent>
         </Card>
@@ -207,13 +203,13 @@ export default function InventoryPage() {
           <Card>
             <CardHeader className="pb-3 flex flex-row justify-between items-center">
               <div>
-                <CardTitle>Physical Stock Status</CardTitle>
-                <CardDescription>Current stock levels compared with minimum alert parameters.</CardDescription>
+                <CardTitle>{t('inventory.physicalStockStatus')}</CardTitle>
+                <CardDescription>{t('inventory.currentStockCompare')}</CardDescription>
               </div>
               {lowStockCount > 0 && (
                 <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-lg border border-amber-200 animate-pulse">
                   <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>{lowStockCount} items need stock replenishment</span>
+                  <span>{lowStockCount} {t('inventory.needReplenishment')}</span>
                 </div>
               )}
             </CardHeader>
@@ -222,18 +218,33 @@ export default function InventoryPage() {
                 <table className="w-full min-w-[600px] text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50 text-slate-500 text-[10px] font-bold uppercase tracking-wider">
-                      <th className="px-6 py-3">SKU</th>
-                      <th className="px-6 py-3">Product Name</th>
-                      <th className="px-6 py-3 text-right">Available Qty</th>
-                      <th className="px-6 py-3 text-right">Min Qty</th>
-                      <th className="px-6 py-3 text-center">Unit</th>
-                      <th className="px-6 py-3 text-center">Status</th>
+                      <th className="px-6 py-3">{t('products.sku')}</th>
+                      <th className="px-6 py-3">{t('products.productName')}</th>
+                      <th className="px-6 py-3 text-right">{t('inventory.availableQty')}</th>
+                      <th className="px-6 py-3 text-right">{t('inventory.minQty')}</th>
+                      <th className="px-6 py-3 text-center">{t('products.unit')}</th>
+                      <th className="px-6 py-3 text-center">{t('products.status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-sm">
                     {products.map((p) => (
                       <tr key={p.sku} className="hover:bg-slate-50/50">
-                        <td className="px-6 py-3.5 font-bold text-slate-900">{p.sku}</td>
+                        <td className="px-6 py-3.5 font-bold text-slate-900">
+                          <div className="flex items-center gap-3">
+                            {p.image ? (
+                              <img 
+                                src={p.image} 
+                                alt={p.sku} 
+                                className="w-10 h-10 object-cover rounded-md border border-slate-200" 
+                              />
+                            ) : (
+                              <div className="w-10 h-10 bg-slate-100 rounded-md border border-slate-200 flex items-center justify-center text-slate-400 font-bold text-[10px]">
+                                NO IMG
+                              </div>
+                            )}
+                            <span>{p.sku}</span>
+                          </div>
+                        </td>
                         <td className="px-6 py-3.5 font-semibold text-slate-700">{p.name}</td>
                         <td className="px-6 py-3.5 text-right font-bold text-slate-900">
                           {formatNumber(p.stock)}
@@ -261,12 +272,12 @@ export default function InventoryPage() {
               <div>
                 <CardTitle className="flex items-center gap-1.5">
                   <History className="w-4 h-4 text-blue-600" />
-                  Stock Movement Log
+                  {t('inventory.movementLog')}
                 </CardTitle>
-                <CardDescription>Warehouse ledger showing recent operations.</CardDescription>
+                <CardDescription>{t('inventory.ledgerDescription')}</CardDescription>
               </div>
               <span className="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded border border-blue-200">
-                Interactive YTD
+                {t('inventory.interactiveYtd')}
               </span>
             </CardHeader>
             <CardContent className="p-0 border-t border-slate-100 max-h-[500px] overflow-y-auto">
@@ -285,14 +296,14 @@ export default function InventoryPage() {
                     <div>
                       <span className="text-xs font-semibold text-slate-700 block">{log.productName}</span>
                       <span className="text-xs text-slate-500 font-semibold block mt-0.5">
-                        Quantity: {formatNumber(log.quantity)} units
+                        {t('inventory.quantity')}: {formatNumber(log.quantity)} units
                       </span>
                       <span className="text-[10px] text-slate-400 block mt-1 italic">
-                        Note: {log.notes}
+                        {t('inventory.note')}: {log.notes}
                       </span>
                     </div>
                     <div className="flex items-center gap-1 text-[10px] text-slate-500 border-t border-slate-100/65 pt-1">
-                      <span className="font-medium">Operator:</span>
+                      <span className="font-medium">{t('inventory.operator')}:</span>
                       <span className="font-semibold text-slate-600">{log.operator}</span>
                     </div>
                   </div>
@@ -323,16 +334,16 @@ export default function InventoryPage() {
 
             <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-blue-600" />
-              {activeAction} Stock Operation
+              {activeAction === 'Receive' ? t('inventory.modalReceiveTitle') : activeAction === 'Issue' ? t('inventory.modalIssueTitle') : t('inventory.modalAdjustTitle')}
             </h3>
             <p className="text-xs text-slate-500 mt-1 font-medium">
-              Simulate updating warehouse stock level and writing audit logs live.
+              {t('inventory.modalDesc')}
             </p>
 
             <form onSubmit={handleExecuteAction} className="space-y-4 mt-6">
               {/* Product Selector */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Select Cable SKU</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('inventory.selectSku')}</label>
                 <select 
                   value={selectedSku}
                   onChange={(e) => setSelectedSku(e.target.value)}
@@ -349,7 +360,7 @@ export default function InventoryPage() {
               {/* Quantity Input */}
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Quantity {activeAction === 'Adjust' && '(Use negative values for stock write-offs)'}
+                  {t('inventory.enterQty')} {activeAction === 'Adjust' && t('inventory.adjustNegWarn')}
                 </label>
                 <input 
                   type="number"
@@ -363,7 +374,7 @@ export default function InventoryPage() {
 
               {/* Operator */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Operator Profile</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('inventory.operatorProfile')}</label>
                 <input 
                   type="text"
                   value={operatorInput}
@@ -376,12 +387,12 @@ export default function InventoryPage() {
 
               {/* Notes */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Internal Notes / Reference</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('inventory.internalNotes')}</label>
                 <textarea 
                   value={notesInput}
                   onChange={(e) => setNotesInput(e.target.value)}
                   className="w-full p-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-700"
-                  placeholder="Write purpose (e.g. Batch #992, Shipping SO-260, Physical check)"
+                  placeholder={t('inventory.notesPlaceholder')}
                   rows={2}
                   required
                 />
@@ -395,7 +406,7 @@ export default function InventoryPage() {
                   onClick={() => setActiveAction(null)}
                   className="text-xs font-semibold"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button 
                   type="submit" 
@@ -405,7 +416,7 @@ export default function InventoryPage() {
                     'bg-amber-600 hover:bg-amber-700'
                   }`}
                 >
-                  Confirm {activeAction} Stock
+                  {t('common.confirm')}
                 </Button>
               </div>
             </form>

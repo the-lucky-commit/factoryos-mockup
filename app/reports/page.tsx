@@ -15,14 +15,10 @@ import {
   Bar, 
   LineChart, 
   Line, 
-  PieChart, 
-  Pie, 
-  Cell, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  Legend, 
   ResponsiveContainer 
 } from 'recharts';
 import { 
@@ -34,8 +30,10 @@ import {
   AlertTriangle,
   FileSpreadsheet
 } from 'lucide-react';
+import { useLanguage } from '@/lib/language-context';
 
 export default function ReportsPage() {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'sales' | 'inventory' | 'receivables'>('sales');
   const [mounted, setMounted] = useState(false);
 
@@ -63,7 +61,6 @@ export default function ReportsPage() {
   // Customer sales summary for charts
   const customerSalesData = useMemo(() => {
     return mockCustomers.map(c => {
-      // Find invoices of this customer
       const sales = mockInvoices
         .filter(inv => inv.customerId === c.id)
         .reduce((sum, inv) => sum + inv.amount, 0);
@@ -77,8 +74,8 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Business Reports & Analytics" 
-        description="Access financial statistics, stock valuation ledgers, and accounts receivable reporting."
+        title={t('reports.title')} 
+        description={t('reports.description')}
         actions={
           <div className="flex gap-2">
             <Button size="sm" variant="outline" className="flex items-center gap-1">
@@ -101,7 +98,7 @@ export default function ReportsPage() {
               : "text-slate-500 hover:text-slate-800"
           }`}
         >
-          <TrendingUp className="w-3.5 h-3.5" /> Sales Performance
+          <TrendingUp className="w-3.5 h-3.5" /> {t('common.viewAll') === 'ดูทั้งหมด' ? 'สรุปยอดขายรายเดือน' : 'Sales Performance'}
         </button>
         <button
           onClick={() => setActiveTab('inventory')}
@@ -111,7 +108,7 @@ export default function ReportsPage() {
               : "text-slate-500 hover:text-slate-800"
           }`}
         >
-          <Boxes className="w-3.5 h-3.5" /> Inventory Valuation
+          <Boxes className="w-3.5 h-3.5" /> {t('common.viewAll') === 'ดูทั้งหมด' ? 'มูลค่าคลังสินค้าคงคลัง' : 'Inventory Valuation'}
         </button>
         <button
           onClick={() => setActiveTab('receivables')}
@@ -121,7 +118,7 @@ export default function ReportsPage() {
               : "text-slate-500 hover:text-slate-800"
           }`}
         >
-          <CreditCard className="w-3.5 h-3.5" /> Receivables Aging
+          <CreditCard className="w-3.5 h-3.5" /> {t('common.viewAll') === 'ดูทั้งหมด' ? 'บัญชีลูกหนี้การค้า' : 'Receivables Aging'}
         </button>
       </div>
 
@@ -132,8 +129,8 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Sales Revenue YTD Growth</CardTitle>
-                <CardDescription>Monthly billed volume analysis for fiscal year 2026.</CardDescription>
+                <CardTitle>{t('common.viewAll') === 'ดูทั้งหมด' ? 'อัตราเติบโตของรายได้ YTD' : 'Sales Revenue YTD Growth'}</CardTitle>
+                <CardDescription>{t('common.viewAll') === 'ดูทั้งหมด' ? 'รายงานปริมาณการเรียกเก็บเงินรายเดือน ประจำปีงบประมาณ 2026' : 'Monthly billed volume analysis for fiscal year 2026.'}</CardDescription>
               </CardHeader>
               <CardContent className="h-80">
                 {mounted ? (
@@ -143,19 +140,19 @@ export default function ReportsPage() {
                       <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} />
                       <YAxis stroke="#94a3b8" fontSize={11} tickFormatter={(v) => `${v/1000}k`} />
                       <Tooltip formatter={(v) => formatCurrency(v as number)} />
-                      <Line type="monotone" dataKey="revenue" name="Billed Sales (THB)" stroke="#3b82f6" strokeWidth={3} activeDot={{ r: 8 }} />
+                      <Line type="monotone" dataKey="revenue" name={t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดขายจริง (บาท)' : 'Billed Sales (THB)'} stroke="#3b82f6" strokeWidth={3} activeDot={{ r: 8 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">Loading Chart...</div>
+                  <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">{t('common.loading')}</div>
                 )}
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Sales Contribution by Customer</CardTitle>
-                <CardDescription>Highest billing corporate clients based on invoice ledger.</CardDescription>
+                <CardTitle>{t('common.viewAll') === 'ดูทั้งหมด' ? 'สัดส่วนยอดขายรายกลุ่มบริษัทลูกค้า' : 'Sales Contribution by Customer'}</CardTitle>
+                <CardDescription>{t('common.viewAll') === 'ดูทั้งหมด' ? 'รายชื่อลูกค้านิติบุคคลที่สร้างรายได้สะสมสูงสุดอิงตามยอดบิลการค้า' : 'Highest billing corporate clients based on invoice ledger.'}</CardDescription>
               </CardHeader>
               <CardContent className="h-80">
                 {mounted ? (
@@ -165,11 +162,11 @@ export default function ReportsPage() {
                       <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} interval={0} height={40} />
                       <YAxis stroke="#94a3b8" fontSize={11} tickFormatter={(v) => `${v/1000}k`} />
                       <Tooltip formatter={(v) => formatCurrency(v as number)} />
-                      <Bar dataKey="sales" name="Sales YTD" fill="#10b981" radius={[4, 4, 0, 0]} barSize={32} />
+                      <Bar dataKey="sales" name={t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดเสนอขาย YTD' : 'Sales YTD'} fill="#10b981" radius={[4, 4, 0, 0]} barSize={32} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">Loading Chart...</div>
+                  <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">{t('common.loading')}</div>
                 )}
               </CardContent>
             </Card>
@@ -178,18 +175,18 @@ export default function ReportsPage() {
           {/* Top Selling Products List */}
           <Card>
             <CardHeader>
-              <CardTitle>Product Sales Performance Leaderboard</CardTitle>
-              <CardDescription>Sales summary grouped by individual SKU and cable specifications.</CardDescription>
+              <CardTitle>{t('common.viewAll') === 'ดูทั้งหมด' ? 'ตารางจัดอันดับประสิทธิภาพยอดขายราย SKU' : 'Product Sales Performance Leaderboard'}</CardTitle>
+              <CardDescription>{t('common.viewAll') === 'ดูทั้งหมด' ? 'สรุปรายงานยอดขายแยกตามประเภทสายไฟและข้อมูลทางเทคนิค' : 'Sales summary grouped by individual SKU and cable specifications.'}</CardDescription>
             </CardHeader>
             <CardContent className="p-0 border-t border-slate-100">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                      <th className="px-6 py-3">SKU</th>
-                      <th className="px-6 py-3">Cable Type Name</th>
-                      <th className="px-6 py-3 text-right">Sold Quantity</th>
-                      <th className="px-6 py-3 text-right">Revenue Share</th>
+                      <th className="px-6 py-3">{t('products.sku')}</th>
+                      <th className="px-6 py-3">{t('products.productName')}</th>
+                      <th className="px-6 py-3 text-right">{t('common.viewAll') === 'ดูทั้งหมด' ? 'ปริมาณที่เสนอขายไป' : 'Sold Quantity'}</th>
+                      <th className="px-6 py-3 text-right">{t('common.viewAll') === 'ดูทั้งหมด' ? 'มูลค่ารายได้สะสม' : 'Revenue Share'}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -198,7 +195,7 @@ export default function ReportsPage() {
                         <td className="px-6 py-3.5 font-bold text-slate-900">{prod.sku}</td>
                         <td className="px-6 py-3.5 font-semibold text-slate-700">{prod.name}</td>
                         <td className="px-6 py-3.5 text-right font-semibold text-slate-700">
-                          {formatNumber(prod.qty)} Meters
+                          {formatNumber(prod.qty)} {t('common.viewAll') === 'ดูทั้งหมด' ? 'เมตร' : 'Meters'}
                         </td>
                         <td className="px-6 py-3.5 text-right font-bold text-blue-600">
                           {formatCurrency(prod.revenue)}
@@ -219,8 +216,8 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Asset Value by Product Category</CardTitle>
-                <CardDescription>Allocation of raw capital asset locked in warehouse stock.</CardDescription>
+                <CardTitle>{t('common.viewAll') === 'ดูทั้งหมด' ? 'มูลค่าสินทรัพย์รวมจำแนกตามรายหมวดหมู่' : 'Asset Value by Product Category'}</CardTitle>
+                <CardDescription>{t('common.viewAll') === 'ดูทั้งหมด' ? 'สัดส่วนเม็ดเงินทุนทางกายภาพที่จัดเก็บอยู่ในโกดังคลังสินค้า' : 'Allocation of raw capital asset locked in warehouse stock.'}</CardDescription>
               </CardHeader>
               <CardContent className="h-80">
                 {mounted ? (
@@ -230,25 +227,25 @@ export default function ReportsPage() {
                       <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
                       <YAxis stroke="#94a3b8" fontSize={11} tickFormatter={(v) => `${v/1000}k`} />
                       <Tooltip formatter={(v) => formatCurrency(v as number)} />
-                      <Bar dataKey="value" name="Asset Cost Value (THB)" fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={36} />
+                      <Bar dataKey="value" name={t('common.viewAll') === 'ดูทั้งหมด' ? 'มูลค่าต้นทุนคลัง (บาท)' : 'Asset Cost Value (THB)'} fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={36} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">Loading Chart...</div>
+                  <div className="w-full h-full bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">{t('common.loading')}</div>
                 )}
               </CardContent>
             </Card>
 
             <Card className="flex flex-col">
               <CardHeader>
-                <CardTitle>Inventory Alert Summary</CardTitle>
-                <CardDescription>Operational indicators for warehouse logistics planning.</CardDescription>
+                <CardTitle>{t('common.viewAll') === 'ดูทั้งหมด' ? 'สรุปรายงานดัชนีคลังสินค้าเตือนภัย' : 'Inventory Alert Summary'}</CardTitle>
+                <CardDescription>{t('common.viewAll') === 'ดูทั้งหมด' ? 'ตัวบ่งชี้การจัดการคลังสำหรับวางแผนห่วงโซ่อุปทานจัดซื้อสินค้า' : 'Operational indicators for warehouse logistics planning.'}</CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col justify-center space-y-4">
                 <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex items-center justify-between">
                   <div className="space-y-1">
-                    <span className="text-xs text-slate-500 font-semibold block">Total Available Skus</span>
-                    <span className="text-xl font-bold text-slate-900">{mockProducts.length} items</span>
+                    <span className="text-xs text-slate-500 font-semibold block">{t('common.viewAll') === 'ดูทั้งหมด' ? 'จำนวนรายการ SKU สายไฟทั้งหมด' : 'Total Available Skus'}</span>
+                    <span className="text-xl font-bold text-slate-900">{mockProducts.length} {t('common.viewAll') === 'ดูทั้งหมด' ? 'รายการ' : 'items'}</span>
                   </div>
                   <div className="p-2 rounded bg-slate-200 text-slate-600">
                     <BarChart3 className="w-5 h-5" />
@@ -257,8 +254,8 @@ export default function ReportsPage() {
 
                 <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-center justify-between">
                   <div className="space-y-1">
-                    <span className="text-xs text-amber-700 font-semibold block">Critical Low Stock Skus</span>
-                    <span className="text-xl font-bold text-amber-600">{lowStockItems.length} items</span>
+                    <span className="text-xs text-amber-700 font-semibold block">{t('common.viewAll') === 'ดูทั้งหมด' ? 'รายการสายไฟที่สต็อกต่ำวิกฤต' : 'Critical Low Stock Skus'}</span>
+                    <span className="text-xl font-bold text-amber-600">{lowStockItems.length} {t('common.viewAll') === 'ดูทั้งหมด' ? 'รายการ' : 'items'}</span>
                   </div>
                   <div className="p-2 rounded bg-amber-100 text-amber-600">
                     <AlertTriangle className="w-5 h-5 animate-bounce" />
@@ -271,20 +268,20 @@ export default function ReportsPage() {
           {/* Low Stock Replenishment Report */}
           <Card>
             <CardHeader>
-              <CardTitle>Critical Low Stock Replenishment Sheet</CardTitle>
-              <CardDescription>Products currently below safe minimum warehouse count threshold.</CardDescription>
+              <CardTitle>{t('common.viewAll') === 'ดูทั้งหมด' ? 'แบบฟอร์มตรวจสอบการจัดซื้อเพิ่มเติมเร่งด่วน' : 'Critical Low Stock Replenishment Sheet'}</CardTitle>
+              <CardDescription>{t('common.viewAll') === 'ดูทั้งหมด' ? 'ตารางรายชื่อสายไฟที่มียอดสต็อกต่ำกว่าเกณฑ์การเตือนเพื่อความปลอดภัยในคลัง' : 'Products currently below safe minimum warehouse count threshold.'}</CardDescription>
             </CardHeader>
             <CardContent className="p-0 border-t border-slate-100">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                      <th className="px-6 py-3">SKU</th>
-                      <th className="px-6 py-3">Cable Name</th>
-                      <th className="px-6 py-3 text-right">Current Stock</th>
-                      <th className="px-6 py-3 text-right">Min Threshold</th>
-                      <th className="px-6 py-3 text-right">Deficit</th>
-                      <th className="px-6 py-3 text-center">Status</th>
+                      <th className="px-6 py-3">{t('products.sku')}</th>
+                      <th className="px-6 py-3">{t('products.productName')}</th>
+                      <th className="px-6 py-3 text-right">{t('inventory.availableQty')}</th>
+                      <th className="px-6 py-3 text-right">{t('inventory.minQty')}</th>
+                      <th className="px-6 py-3 text-right">{t('common.viewAll') === 'ดูทั้งหมด' ? 'ขาดแคลนจำนวน' : 'Deficit'}</th>
+                      <th className="px-6 py-3 text-center">{t('products.status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -293,13 +290,13 @@ export default function ReportsPage() {
                         <td className="px-6 py-3.5 font-bold text-slate-900">{prod.sku}</td>
                         <td className="px-6 py-3.5 font-semibold text-slate-700">{prod.name}</td>
                         <td className="px-6 py-3.5 text-right font-bold text-rose-600">
-                          {formatNumber(prod.stock)} {prod.unit}s
+                          {formatNumber(prod.stock)} {prod.unit === 'Meter' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'เมตร' : 'Meter') : (t('common.viewAll') === 'ดูทั้งหมด' ? 'ม้วน' : 'Roll')}
                         </td>
                         <td className="px-6 py-3.5 text-right font-semibold text-slate-400">
-                          {formatNumber(prod.minStock)} {prod.unit}s
+                          {formatNumber(prod.minStock)} {prod.unit === 'Meter' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'เมตร' : 'Meter') : (t('common.viewAll') === 'ดูทั้งหมด' ? 'ม้วน' : 'Roll')}
                         </td>
                         <td className="px-6 py-3.5 text-right font-black text-rose-700">
-                          {formatNumber(prod.minStock - prod.stock)} {prod.unit}s
+                          {formatNumber(prod.minStock - prod.stock)} {prod.unit === 'Meter' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'เมตร' : 'Meter') : (t('common.viewAll') === 'ดูทั้งหมด' ? 'ม้วน' : 'Roll')}
                         </td>
                         <td className="px-6 py-3.5 text-center">
                           <StatusBadge status={prod.status} />
@@ -320,21 +317,21 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="bg-amber-50/30 border-amber-100">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-bold text-slate-500 uppercase">Receivable Ledger Balance</CardTitle>
+                <CardTitle className="text-sm font-bold text-slate-500 uppercase">{t('invoices.totalOutstanding')}</CardTitle>
                 <h2 className="text-2xl font-black text-amber-600 mt-1">{formatCurrency(totalOutstanding)}</h2>
               </CardHeader>
               <CardContent className="text-xs text-slate-500 font-medium">
-                Outstanding funds across all active project accounts.
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดลูกหนี้ที่อยู่ระหว่างค้างรับจ่ายทุกๆ บัญชีผู้ซื้อ B2B' : 'Outstanding funds across all active project accounts.'}
               </CardContent>
             </Card>
 
             <Card className="bg-rose-50/30 border-rose-100">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-bold text-slate-500 uppercase">Overdue Collections</CardTitle>
+                <CardTitle className="text-sm font-bold text-slate-500 uppercase">{t('common.viewAll') === 'ดูทั้งหมด' ? 'ลูกหนี้ที่พ้นกำหนดรับชำระ' : 'Overdue Collections'}</CardTitle>
                 <h2 className="text-2xl font-black text-rose-600 mt-1">{formatCurrency(totalOverdue)}</h2>
               </CardHeader>
               <CardContent className="text-xs text-slate-500 font-medium">
-                Recovers past the contract credit-terms due date.
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดหนี้ค้างชำระที่เกินสัญญาการปล่อยสินเชื่อเครดิตเทอมการค้า' : 'Recovers past the contract credit-terms due date.'}
               </CardContent>
             </Card>
           </div>
@@ -342,21 +339,21 @@ export default function ReportsPage() {
           {/* Aging Receivables Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Accounts Receivable Ledger Details</CardTitle>
-              <CardDescription>Invoices that remain unpaid or partially settled.</CardDescription>
+              <CardTitle>{t('common.viewAll') === 'ดูทั้งหมด' ? 'บัญชีแยกประเภทลูกหนี้การค้ารายบริษัท' : 'Accounts Receivable Ledger Details'}</CardTitle>
+              <CardDescription>{t('common.viewAll') === 'ดูทั้งหมด' ? 'รายการข้อมูลเอกสารใบสั่งซื้อจัดบิลที่ยังไม่ชำระหรือชำระเพียงบางส่วน' : 'Invoices that remain unpaid or partially settled.'}</CardDescription>
             </CardHeader>
             <CardContent className="p-0 border-t border-slate-100">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                      <th className="px-6 py-3.5">Invoice No</th>
-                      <th className="px-6 py-3.5">Client Customer</th>
-                      <th className="px-6 py-3.5">Billing Date</th>
-                      <th className="px-6 py-3.5">Due Date</th>
-                      <th className="px-6 py-3.5 text-right">Invoice Total</th>
-                      <th className="px-6 py-3.5 text-right">Outstanding</th>
-                      <th className="px-6 py-3.5 text-center">Status</th>
+                      <th className="px-6 py-3.5">{t('invoices.invoiceNo')}</th>
+                      <th className="px-6 py-3.5">{t('quotations.customerName')}</th>
+                      <th className="px-6 py-3.5">{t('quotations.issuedDate')}</th>
+                      <th className="px-6 py-3.5">{t('invoices.dueDate')}</th>
+                      <th className="px-6 py-3.5 text-right">{t('invoices.amountDue')}</th>
+                      <th className="px-6 py-3.5 text-right">{t('invoices.unpaid')}</th>
+                      <th className="px-6 py-3.5 text-center">{t('products.status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">

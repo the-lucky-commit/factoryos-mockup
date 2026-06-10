@@ -106,7 +106,7 @@ const initialAuditLogs: AuditLog[] = [
   {
     id: '1',
     timestamp: '2026-06-10 14:15:30',
-    user: 'Bank Supharoek',
+    user: 'สมชาย ยิ่งเจริญ',
     role: 'Administrator',
     action: 'Changed corporate tax VAT settings (VAT set to 7%)',
     status: 'Success',
@@ -192,7 +192,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('security_active_role', role);
     
     // Log role switch action
-    logAction(`Switched dashboard view role to: ${role}`, 'Success', 'Bank Supharoek', role);
+    logAction(`Switched dashboard view role to: ${role}`, 'Success', 'สมชาย ยิ่งเจริญ', role);
   };
 
   const togglePermission = (role: UserRole, permissionKey: string) => {
@@ -208,7 +208,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       return updated;
     });
 
-    logAction(`Modified permission: toggled '${permissionKey}' for role '${role}'`, 'Success', 'Bank Supharoek', activeRole);
+    logAction(`Modified permission: toggled '${permissionKey}' for role '${role}'`, 'Success', 'สมชาย ยิ่งเจริญ', activeRole);
   };
 
   const logAction = (
@@ -217,7 +217,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     userName?: string,
     roleName?: UserRole
   ) => {
-    const finalUser = userName || 'Bank Supharoek';
+    const finalUser = userName || 'สมชาย ยิ่งเจริญ';
     const finalRole = roleName || activeRole;
     
     const newLog: AuditLog = {

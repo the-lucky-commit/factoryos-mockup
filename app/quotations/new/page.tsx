@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { mockCustomers } from '@/data/mock-customers';
 import { mockProducts } from '@/data/mock-products';
-import { Customer, Product, QuotationItem, Quotation } from '@/lib/types';
+import { Customer, Product, QuotationItem } from '@/lib/types';
 import { calculateTotals } from '@/lib/calculations';
 import { formatCurrency, formatNumber, formatDate } from '@/lib/utils';
 import { 
@@ -18,20 +18,22 @@ import {
   Building, 
   Calendar, 
   FileText, 
-  AlertCircle,
   CheckCircle2,
   Printer
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSecurity } from '@/lib/security-context';
+import { useLanguage } from '@/lib/language-context';
 import AccessDenied from '@/components/layout/access-denied';
 
 export default function CreateQuotationPage() {
   const { checkPermission, logAction } = useSecurity();
+  const { t } = useLanguage();
 
   if (!checkPermission('create_quotations')) {
     return <AccessDenied moduleNameTh="สร้างใบเสนอราคา (Create Quotation)" moduleNameEn="Create Quotation" />;
   }
+
   // 1. Core State
   const [selectedCustomerId, setSelectedCustomerId] = useState(mockCustomers[0].id);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -72,7 +74,6 @@ export default function CreateQuotationPage() {
 
   // 3. Form operations
   const handleAddItem = () => {
-    // Default to the first product that isn't already in the list, or just the first product
     const product = mockProducts[1] || mockProducts[0];
     const newItem: QuotationItem = {
       sku: product.sku,
@@ -123,17 +124,17 @@ export default function CreateQuotationPage() {
     const newNo = `QT202606-${Math.floor(100 + Math.random() * 900)}`;
     setNewQuoteNo(newNo);
     setSavedSuccess(true);
-    logAction(`Created Quotation ${newNo} (${status === 'Draft' ? 'แบบร่าง' : 'ส่งแล้ว'}) for customer ID: ${selectedCustomerId}`, 'Success');
+    logAction(`Created Quotation ${newNo} (${status === 'Draft' ? 'แบบร่าง' : 'ส่งแล้ว'}) for customer ID: ${selectedCustomerId}`, 'Success', t('common.userName'));
   };
 
   return (
     <div className="space-y-6 relative h-full">
       <PageHeader 
-        title="Create Price Quotation" 
-        description="Configure client parameters and compile cable line items with instant layout previews."
+        title={t('newQuotation.title')} 
+        description={t('newQuotation.description')}
         actions={
           <Link href="/quotations">
-            <Button variant="outline" size="sm">Back to List</Button>
+            <Button variant="outline" size="sm">{t('newQuotation.backToQuotations')}</Button>
           </Link>
         }
       />
@@ -145,13 +146,13 @@ export default function CreateQuotationPage() {
             <CardHeader className="pb-4 border-b border-slate-100">
               <CardTitle className="text-md font-bold text-slate-800 flex items-center gap-2">
                 <Building className="w-5 h-5 text-blue-600" />
-                Customer & Date Setup
+                {t('newQuotation.corporateProfile')}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Customer Select */}
               <div className="md:col-span-3">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Select Customer</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('newQuotation.selectCustomer')}</label>
                 <select 
                   value={selectedCustomerId}
                   onChange={(e) => setSelectedCustomerId(e.target.value)}
@@ -167,7 +168,7 @@ export default function CreateQuotationPage() {
 
               {/* Date */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Quotation Date</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('newQuotation.quotationDate')}</label>
                 <input 
                   type="date"
                   value={date}
@@ -178,7 +179,7 @@ export default function CreateQuotationPage() {
 
               {/* Expiry Date */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Expiry Date</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('newQuotation.expiryDate')}</label>
                 <input 
                   type="date"
                   value={expiryDate}
@@ -189,10 +190,10 @@ export default function CreateQuotationPage() {
 
               {/* Sales Person */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Representative</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('newQuotation.representative')}</label>
                 <input 
                   type="text"
-                  value="Bank Supharoek"
+                  value={t('common.userName')}
                   disabled
                   className="w-full p-2 border border-slate-200 rounded-lg text-sm bg-slate-50 text-slate-500 font-semibold"
                 />
@@ -206,12 +207,12 @@ export default function CreateQuotationPage() {
               <div>
                 <CardTitle className="text-md font-bold text-slate-800 flex items-center gap-2">
                   <FileText className="w-5 h-5 text-blue-600" />
-                  Product Line Items
+                  {t('newQuotation.productLineItems')}
                 </CardTitle>
-                <CardDescription className="text-xs font-medium">Add industrial cables, specify lengths, and apply itemized discounts.</CardDescription>
+                <CardDescription className="text-xs font-medium">{t('newQuotation.description')}</CardDescription>
               </div>
               <Button onClick={handleAddItem} size="sm" variant="outline" className="text-xs font-semibold text-blue-600 border-blue-200 hover:bg-blue-50">
-                <Plus className="w-4 h-4" /> Add Item
+                <Plus className="w-4 h-4" /> {t('newQuotation.addProductLine')}
               </Button>
             </CardHeader>
             <CardContent className="p-0">
@@ -219,11 +220,11 @@ export default function CreateQuotationPage() {
                 <table className="w-full min-w-[650px] text-left border-collapse text-xs">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50 text-slate-500 font-bold uppercase">
-                      <th className="px-4 py-3">Cable SKU Selector</th>
-                      <th className="px-4 py-3 text-right w-20">Quantity</th>
-                      <th className="px-4 py-3 text-right w-24">Unit Price</th>
-                      <th className="px-4 py-3 text-right w-16">Disc %</th>
-                      <th className="px-4 py-3 text-right w-28">Subtotal</th>
+                      <th className="px-4 py-3">{t('newQuotation.skuDesc')}</th>
+                      <th className="px-4 py-3 text-right w-20">{t('newQuotation.quantity')}</th>
+                      <th className="px-4 py-3 text-right w-24">{t('newQuotation.unitPrice')}</th>
+                      <th className="px-4 py-3 text-right w-16">{t('newQuotation.discountPercent')}</th>
+                      <th className="px-4 py-3 text-right w-28">{t('newQuotation.amount')}</th>
                       <th className="px-4 py-3 text-center w-12"></th>
                     </tr>
                   </thead>
@@ -308,14 +309,14 @@ export default function CreateQuotationPage() {
             <CardHeader className="pb-3 border-b border-slate-100">
               <CardTitle className="text-md font-bold text-slate-800 flex items-center gap-2">
                 <Save className="w-5 h-5 text-blue-600" />
-                Discounts, Terms & Notes
+                {t('newQuotation.paymentTerms')}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6 space-y-4 text-sm">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Flat Discount */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Additional Flat Discount (THB)</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('newQuotation.flatDiscountLabel')}</label>
                   <input 
                     type="number"
                     value={flatDiscount}
@@ -325,7 +326,7 @@ export default function CreateQuotationPage() {
                 </div>
                 {/* VAT Rate */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">VAT Rate (%)</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('quotations.vat')}</label>
                   <input 
                     type="text"
                     value="7% (Standard Thailand VAT)"
@@ -337,7 +338,7 @@ export default function CreateQuotationPage() {
 
               {/* Delivery Terms */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Delivery & Payment Terms</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('newQuotation.termsAndConditions')}</label>
                 <input 
                   type="text"
                   value={terms}
@@ -348,7 +349,7 @@ export default function CreateQuotationPage() {
 
               {/* Internal Notes */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Remarks / Internal Notes</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('newQuotation.notes')}</label>
                 <textarea 
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -362,10 +363,10 @@ export default function CreateQuotationPage() {
           {/* Action Row */}
           <div className="flex justify-end gap-3">
             <Button variant="outline" className="font-semibold" onClick={() => handleSaveQuotation('Draft')}>
-              Save Draft
+              {t('newQuotation.saveDraft')}
             </Button>
             <Button className="font-semibold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5" onClick={() => handleSaveQuotation('Sent')}>
-              <Send className="w-4 h-4" /> Send to Customer
+              <Send className="w-4 h-4" /> {t('newQuotation.issueDocument')}
             </Button>
           </div>
         </div>
@@ -377,10 +378,10 @@ export default function CreateQuotationPage() {
             <div className="bg-slate-50 border-b border-slate-200 px-6 py-3.5 flex justify-between items-center">
               <span className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1">
                 <Sparkles className="w-4 h-4 text-blue-600 animate-pulse" />
-                Live Document Preview
+                {t('quotations.layoutPreviewTitle')}
               </span>
               <Button size="sm" variant="ghost" className="text-xs flex items-center gap-1 hover:bg-slate-200 font-semibold" onClick={() => window.print()}>
-                <Printer className="w-3.5 h-3.5" /> PDF
+                <Printer className="w-3.5 h-3.5" /> {t('quotations.printPdf')}
               </Button>
             </div>
 
@@ -390,7 +391,7 @@ export default function CreateQuotationPage() {
               <div className="flex justify-between items-start border-b-2 border-slate-900 pb-5">
                 <div>
                   <h2 className="text-lg font-black tracking-tight text-slate-900 font-sans">
-                    CABLE HUB SUPPLY CO., LTD.
+                    {t('topbar.companyName').toUpperCase()}
                   </h2>
                   <p className="text-[9px] text-slate-500 font-sans font-semibold mt-0.5 leading-tight">
                     456 Factory Industrial Zone, Moo 4, Bang Na-Trad Rd, Bang Phli, Samut Prakan 10540<br/>
@@ -398,13 +399,15 @@ export default function CreateQuotationPage() {
                   </p>
                 </div>
                 <div className="text-right font-sans">
-                  <h1 className="text-lg font-bold tracking-wider text-slate-900 leading-none">QUOTATION</h1>
+                  <h1 className="text-lg font-bold tracking-wider text-slate-900 leading-none">
+                    {t('nav.quotations') === 'ใบเสนอราคา' ? 'ใบเสนอราคา' : 'QUOTATION'}
+                  </h1>
                   <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 mt-2.5 text-[10px] text-left border border-slate-200 p-2 rounded bg-slate-50">
-                    <span className="text-slate-400 font-medium">Doc Number:</span>
+                    <span className="text-slate-400 font-medium">{t('quotations.quotationNo')}:</span>
                     <span className="font-bold text-slate-950">QT202606-XXX</span>
-                    <span className="text-slate-400 font-medium">Issue Date:</span>
+                    <span className="text-slate-400 font-medium">{t('quotations.issuedDate')}:</span>
                     <span className="font-semibold text-slate-950">{formatDate(date)}</span>
-                    <span className="text-slate-400 font-medium">Expiry Date:</span>
+                    <span className="text-slate-400 font-medium">{t('newQuotation.expiryDate')}:</span>
                     <span className="font-semibold text-rose-600">{formatDate(expiryDate)}</span>
                   </div>
                 </div>
@@ -413,18 +416,18 @@ export default function CreateQuotationPage() {
               {/* Customer and info */}
               <div className="grid grid-cols-2 gap-4 py-4 text-[10px] font-sans border-b border-slate-100">
                 <div className="space-y-0.5">
-                  <span className="text-[8px] uppercase font-bold text-slate-400 block tracking-wider">Client Company</span>
+                  <span className="text-[8px] uppercase font-bold text-slate-400 block tracking-wider">{t('newQuotation.clientCompany')}</span>
                   <span className="font-bold text-slate-900 block">{currentCustomer.companyName}</span>
                   <span className="text-slate-500 block leading-normal">{currentCustomer.address}</span>
-                  <span className="text-slate-500 block">Tax ID: {currentCustomer.taxId}</span>
+                  <span className="text-slate-500 block">{t('customers.taxId')}: {currentCustomer.taxId}</span>
                 </div>
                 <div className="space-y-1 text-right">
                   <div>
-                    <span className="text-slate-400">Representative:</span>
-                    <span className="font-semibold text-slate-800 ml-1">Bank Supharoek</span>
+                    <span className="text-slate-400">{t('newQuotation.representative')}:</span>
+                    <span className="font-semibold text-slate-800 ml-1">{t('common.userName')}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400">Credit Term:</span>
+                    <span className="text-slate-400">{t('newQuotation.creditTerm')}:</span>
                     <span className="font-bold text-slate-800 ml-1">{currentCustomer.creditTerm}</span>
                   </div>
                 </div>
@@ -436,12 +439,12 @@ export default function CreateQuotationPage() {
                   <thead>
                     <tr className="border-b border-slate-300 text-slate-500 font-bold uppercase">
                       <th className="py-2 w-6 text-center">#</th>
-                      <th className="py-2">Cable Product Details</th>
-                      <th className="py-2 text-right w-12">Qty</th>
-                      <th className="py-2 text-center w-12">Unit</th>
-                      <th className="py-2 text-right w-20">Price</th>
-                      <th className="py-2 text-right w-12">Disc</th>
-                      <th className="py-2 text-right w-24">Amount</th>
+                      <th className="py-2">{t('newQuotation.skuDesc')}</th>
+                      <th className="py-2 text-right w-12">{t('newQuotation.quantity')}</th>
+                      <th className="py-2 text-center w-12">{t('products.unit')}</th>
+                      <th className="py-2 text-right w-20">{t('newQuotation.unitPrice')}</th>
+                      <th className="py-2 text-right w-12">{t('newQuotation.discountPercent')}</th>
+                      <th className="py-2 text-right w-24">{t('newQuotation.amount')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -453,7 +456,7 @@ export default function CreateQuotationPage() {
                           <span className="text-[9px] text-slate-500 block mt-0.5">{item.name}</span>
                         </td>
                         <td className="py-2.5 text-right font-semibold">{formatNumber(item.qty)}</td>
-                        <td className="py-2.5 text-center text-slate-500 font-semibold">{item.unit}</td>
+                        <td className="py-2.5 text-center text-slate-500 font-semibold">{item.unit === 'Meter' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'เมตร' : 'Meter') : (t('common.viewAll') === 'ดูทั้งหมด' ? 'ม้วน' : 'Roll')}</td>
                         <td className="py-2.5 text-right font-semibold">{formatCurrency(item.unitPrice)}</td>
                         <td className="py-2.5 text-right text-slate-500">{item.discount}%</td>
                         <td className="py-2.5 text-right font-bold text-slate-950">{formatCurrency(item.total)}</td>
@@ -466,29 +469,29 @@ export default function CreateQuotationPage() {
               {/* Summary Calculations */}
               <div className="flex justify-between items-start gap-4 pt-4 border-t border-slate-200 font-sans text-[10px]">
                 <div className="max-w-[200px] leading-tight text-[9px]">
-                  <span className="font-bold text-slate-800 block">Bank Transfer Account</span>
-                  <span className="text-slate-500 block mt-0.5">Siam Commercial Bank (SCB)</span>
-                  <span className="text-slate-500 block">A/C: Cable Hub Supply Co., Ltd.</span>
+                  <span className="font-bold text-slate-800 block">{t('quotations.paymentAccount')}</span>
+                  <span className="text-slate-500 block mt-0.5">{t('common.viewAll') === 'ดูทั้งหมด' ? 'ธนาคารไทยพาณิชย์ (SCB)' : 'Siam Commercial Bank (SCB)'}</span>
+                  <span className="text-slate-500 block">{t('common.viewAll') === 'ดูทั้งหมด' ? 'ชื่อบัญชี: บริษัท เคเบิ้ล ฮับ ซัพพลาย จำกัด' : 'Account Name: Cable Hub Supply Co., Ltd.'}</span>
                   <span className="font-bold text-slate-900 block mt-0.5">No: 123-4-56789-0</span>
                 </div>
 
                 <div className="w-56 space-y-1.5 border border-slate-100 rounded p-2.5 bg-slate-50">
                   <div className="flex justify-between text-[10px]">
-                    <span className="text-slate-500">Subtotal:</span>
+                    <span className="text-slate-500">{t('newQuotation.amount')} (Subtotal):</span>
                     <span className="font-semibold text-slate-900">{formatCurrency(totals.subtotal)}</span>
                   </div>
                   {totals.discountFlat > 0 && (
                     <div className="flex justify-between text-rose-600 font-semibold text-[10px]">
-                      <span>Flat Discount:</span>
+                      <span>{t('quotations.flatDiscount')}:</span>
                       <span>-{formatCurrency(totals.discountFlat)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-[10px]">
-                    <span className="text-slate-500">VAT (7%):</span>
+                    <span className="text-slate-500">{t('quotations.vat')}:</span>
                     <span className="font-semibold text-slate-900">{formatCurrency(totals.vatAmount)}</span>
                   </div>
                   <div className="flex justify-between border-t border-slate-200 pt-1 text-xs">
-                    <span className="text-slate-900 font-bold">Grand Total:</span>
+                    <span className="text-slate-900 font-bold">{t('quotations.grandTotal')}:</span>
                     <span className="font-black text-blue-700">{formatCurrency(totals.grandTotal)}</span>
                   </div>
                 </div>
@@ -497,11 +500,11 @@ export default function CreateQuotationPage() {
               {/* Footer Terms */}
               <div className="mt-6 border-t border-slate-100 pt-4 font-sans text-[9px] text-slate-500 space-y-1 leading-normal italic">
                 <div>
-                  <span className="font-bold text-slate-600 block not-italic">Delivery & Payments:</span>
+                  <span className="font-bold text-slate-600 block not-italic">{t('newQuotation.paymentTerms')}:</span>
                   {terms}
                 </div>
                 <div>
-                  <span className="font-bold text-slate-600 block not-italic">Notes:</span>
+                  <span className="font-bold text-slate-600 block not-italic">{t('newQuotation.notes')}:</span>
                   {notes}
                 </div>
               </div>
@@ -519,17 +522,17 @@ export default function CreateQuotationPage() {
           />
           <div className="bg-white border border-slate-200 rounded-xl shadow-2xl w-full max-w-sm p-6 z-50 relative text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
-            <h3 className="text-lg font-bold text-slate-900">Quotation Created Successfully</h3>
+            <h3 className="text-lg font-bold text-slate-900">{t('common.viewAll') === 'ดูทั้งหมด' ? 'สร้างใบเสนอราคาสำเร็จ' : 'Quotation Created Successfully'}</h3>
             <p className="text-xs text-slate-500 leading-normal font-semibold">
-              Quotation <span className="font-bold text-slate-900">{newQuoteNo}</span> has been created and logged in the operational database.
+              {t('common.viewAll') === 'ดูทั้งหมด' ? 'ใบเสนอราคา ' : 'Quotation '}<span className="font-bold text-slate-900">{newQuoteNo}</span>{t('common.viewAll') === 'ดูทั้งหมด' ? ' ถูกบันทึกลงในฐานข้อมูลระบบสำเร็จเรียบร้อยแล้ว' : ' has been created and logged in the operational database.'}
             </p>
             <div className="flex justify-center gap-2 pt-2">
               <Button size="sm" variant="outline" className="text-xs font-semibold" onClick={() => setSavedSuccess(false)}>
-                Stay Here
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'อยู่หน้านี้ต่อ' : 'Stay Here'}
               </Button>
               <Link href="/quotations">
                 <Button size="sm" className="text-xs font-semibold bg-blue-600 text-white">
-                  View Quotations List
+                  {t('newQuotation.backToQuotations')}
                 </Button>
               </Link>
             </div>

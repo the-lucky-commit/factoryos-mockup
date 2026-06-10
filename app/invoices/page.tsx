@@ -11,24 +11,25 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import { 
   Search, 
   Receipt, 
-  TrendingUp, 
   CreditCard, 
   AlertCircle, 
   CheckCircle,
   PiggyBank,
-  CheckCircle2,
-  DollarSign
+  CheckCircle2
 } from 'lucide-react';
 
 import { useSecurity } from '@/lib/security-context';
+import { useLanguage } from '@/lib/language-context';
 import AccessDenied from '@/components/layout/access-denied';
 
 export default function InvoicesPage() {
   const { checkPermission, logAction } = useSecurity();
+  const { t } = useLanguage();
 
   if (!checkPermission('manage_invoices')) {
     return <AccessDenied moduleNameTh="ใบแจ้งหนี้ (Invoices)" moduleNameEn="Invoices" />;
   }
+
   // Local state to simulate receiving payments
   const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);
   const [searchTerm, setSearchTerm] = useState('');
@@ -93,15 +94,15 @@ export default function InvoicesPage() {
     });
     setInvoices(updated);
     if (targetInv) {
-      logAction(`Invoice: Settled payment on invoice ${targetInv.invoiceNumber} (Marked Paid, settled ${targetInv.outstandingAmount} THB)`, 'Success');
+      logAction(`Invoice: Settled payment on invoice ${targetInv.invoiceNumber} (Marked Paid, settled ${targetInv.outstandingAmount} THB)`, 'Success', t('common.userName'));
     }
   };
 
   return (
     <div className="space-y-6 relative">
       <PageHeader 
-        title="Invoice & Ledger Control" 
-        description="Review invoices issued to clients, filter status breakdowns, and simulate cash-in receipts."
+        title={t('invoices.title')} 
+        description={t('invoices.description')}
       />
 
       {/* Financial Summary Cards */}
@@ -109,7 +110,9 @@ export default function InvoicesPage() {
         {/* Card 1 */}
         <Card className="hover:border-slate-300 transition-colors">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">Total Billed YTD</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400">
+              {t('common.viewAll') === 'ดูทั้งหมด' ? 'ยอดออกบิลรวมทั้งหมด YTD' : 'Total Billed YTD'}
+            </span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl font-bold text-slate-900">{formatCurrency(metrics.totalInvoiced)}</span>
               <div className="p-1 rounded bg-slate-100 text-slate-500">
@@ -122,7 +125,7 @@ export default function InvoicesPage() {
         {/* Card 2 */}
         <Card className="hover:border-emerald-300 transition-colors">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">Collected Cash</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400">{t('invoices.collectedAmount')}</span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl font-bold text-emerald-600">{formatCurrency(metrics.paidAmount)}</span>
               <div className="p-1 rounded bg-emerald-50 text-emerald-500">
@@ -135,7 +138,7 @@ export default function InvoicesPage() {
         {/* Card 3 */}
         <Card className="hover:border-amber-300 transition-colors">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">Outstanding Receivable</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400">{t('invoices.totalOutstanding')}</span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl font-bold text-amber-600">{formatCurrency(metrics.outstandingAmount)}</span>
               <div className="p-1 rounded bg-amber-50 text-amber-500">
@@ -148,7 +151,7 @@ export default function InvoicesPage() {
         {/* Card 4 */}
         <Card className="hover:border-rose-300 transition-colors">
           <CardContent className="p-5">
-            <span className="text-[10px] uppercase font-bold text-slate-400">Overdue Invoices</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400">{t('invoices.overdueCount')}</span>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl font-bold text-rose-600">{formatCurrency(metrics.overdueAmount)}</span>
               <div className="p-1 rounded bg-rose-50 text-rose-500">
@@ -167,7 +170,7 @@ export default function InvoicesPage() {
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search invoice #, quote #, customer..."
+              placeholder={t('invoices.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700"
@@ -186,7 +189,10 @@ export default function InvoicesPage() {
                     : "text-slate-500 hover:text-slate-800"
                 }`}
               >
-                {status}
+                {status === 'All' ? (t('common.viewAll') === 'ดูทั้งหมด' ? 'ทั้งหมด' : t('common.viewAll')) : 
+                 status === 'Paid' ? t('invoices.paid') : 
+                 status === 'Partially Paid' ? t('invoices.partiallyPaid') : 
+                 status === 'Unpaid' ? t('invoices.unpaid') : t('invoices.overdue')}
               </button>
             ))}
           </div>
@@ -198,16 +204,16 @@ export default function InvoicesPage() {
             <table className="w-full min-w-[950px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                  <th className="px-6 py-3.5">Invoice No</th>
-                  <th className="px-6 py-3.5">Quotation No</th>
-                  <th className="px-6 py-3.5">Customer Name</th>
-                  <th className="px-6 py-3.5">Date</th>
-                  <th className="px-6 py-3.5">Due Date</th>
-                  <th className="px-6 py-3.5 text-right">Invoice Amount</th>
-                  <th className="px-6 py-3.5 text-right">Paid Amount</th>
-                  <th className="px-6 py-3.5 text-right">Outstanding</th>
-                  <th className="px-6 py-3.5 text-center">Status</th>
-                  <th className="px-6 py-3.5 text-center">Action</th>
+                  <th className="px-6 py-3.5">{t('invoices.invoiceNo')}</th>
+                  <th className="px-6 py-3.5">{t('quotations.quotationNo')}</th>
+                  <th className="px-6 py-3.5">{t('quotations.customerName')}</th>
+                  <th className="px-6 py-3.5">{t('quotations.issuedDate')}</th>
+                  <th className="px-6 py-3.5">{t('invoices.dueDate')}</th>
+                  <th className="px-6 py-3.5 text-right">{t('invoices.amountDue')}</th>
+                  <th className="px-6 py-3.5 text-right">{t('invoices.paid')}</th>
+                  <th className="px-6 py-3.5 text-right">{t('invoices.unpaid')}</th>
+                  <th className="px-6 py-3.5 text-center">{t('products.status')}</th>
+                  <th className="px-6 py-3.5 text-center">{t('quotations.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
@@ -239,11 +245,11 @@ export default function InvoicesPage() {
                             onClick={() => handleReceivePayment(inv.id)}
                             className="text-xs px-2 py-1 font-semibold text-emerald-600 border-emerald-200 hover:bg-emerald-50 h-7"
                           >
-                            Mark Paid
+                            {t('invoices.markAsPaid')}
                           </Button>
                         ) : (
                           <span className="text-xs text-emerald-600 font-semibold flex items-center justify-center gap-1">
-                            <CheckCircle className="w-3.5 h-3.5" /> Settled
+                            <CheckCircle className="w-3.5 h-3.5" /> {t('common.viewAll') === 'ดูทั้งหมด' ? 'รับเงินแล้ว' : 'Settled'}
                           </span>
                         )}
                       </td>
@@ -252,7 +258,7 @@ export default function InvoicesPage() {
                 ) : (
                   <tr>
                     <td colSpan={10} className="px-6 py-12 text-center text-slate-400 font-medium">
-                      No invoices match your selection.
+                      {t('invoices.noInvoices')}
                     </td>
                   </tr>
                 )}
@@ -271,13 +277,13 @@ export default function InvoicesPage() {
           />
           <div className="bg-white border border-slate-200 rounded-xl shadow-2xl w-full max-w-sm p-6 z-50 relative text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
-            <h3 className="text-lg font-bold text-slate-900">Payment Received</h3>
+            <h3 className="text-lg font-bold text-slate-900">{t('common.viewAll') === 'ดูทั้งหมด' ? 'ได้รับชำระเงินเรียบร้อย' : 'Payment Received'}</h3>
             <p className="text-xs text-slate-500 leading-normal font-semibold">
-              Payment of <span className="font-bold text-slate-900">{formatCurrency(paymentSuccessInfo.amt)}</span> SCB transfer for invoice <span className="font-bold text-slate-900">{paymentSuccessInfo.invNo}</span> has been processed. Ledger state updated.
+              {t('common.viewAll') === 'ดูทั้งหมด' ? 'การโอนเงินจำนวน ' : 'Payment of '} <span className="font-bold text-slate-900">{formatCurrency(paymentSuccessInfo.amt)}</span> {t('common.viewAll') === 'ดูทั้งหมด' ? ' เข้าธนาคารไทยพาณิชย์ สำหรับใบแจ้งหนี้ ' : ' SCB transfer for invoice '} <span className="font-bold text-slate-900">{paymentSuccessInfo.invNo}</span> {t('common.viewAll') === 'ดูทั้งหมด' ? ' ได้รับการตรวจสอบและปรับยอดทางบัญชีสำเร็จแล้ว' : ' has been processed. Ledger state updated.'}
             </p>
             <div className="flex justify-center pt-2">
               <Button size="sm" className="text-xs font-semibold bg-emerald-600 text-white" onClick={() => setPaymentSuccessInfo(null)}>
-                Dismiss
+                {t('common.viewAll') === 'ดูทั้งหมด' ? 'ปิดหน้าต่าง' : 'Dismiss'}
               </Button>
             </div>
           </div>

@@ -164,7 +164,7 @@ export default function AppSidebar({
           </div>
           {!collapsed && (
             <div className="overflow-hidden animate-in fade-in duration-350">
-              <span className="text-sm font-semibold block text-slate-200 truncate">Bank Supharoek</span>
+              <span className="text-sm font-semibold block text-slate-200 truncate">{t('common.userName')}</span>
               <span className="text-xs text-slate-500 block truncate">{t('common.administrator')}</span>
             </div>
           )}
